@@ -104,3 +104,11 @@ interface MetamaskAssetParamsOptions {
 interface MetamaskAssetParamsType {
   type: "ERC20";
 }
+interface ProposalAction {
+  targetAddress: string;
+  isProxyAddress: boolean;
+  shouldAddValueAttribute: boolean;
+  numberOfZeroes: number;
+  shouldAddFunctionCall: boolean;
+  selectedFunction: string;
+}
