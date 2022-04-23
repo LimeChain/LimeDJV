@@ -4,8 +4,10 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { Contract, Signer } from "ethers";
-import {JointVenture, MultiSigWalletFactory, TestCalls, MockToken} from '../typechain';
+import {JointVenture, TestCalls, ERC20Mock} from '../typechain';
 import { findEventByName, getParamFromTxEvent } from "./utils";
+
+const zeroAddress = ethers.constants.AddressZero;
 
 describe("JointVenture", function () {
   let jv: JointVenture;
@@ -16,10 +18,13 @@ describe("JointVenture", function () {
   let deployer: Signer;
   let voter1: Signer, voter2: Signer;
   let proposer1: Signer, proposer2: Signer;
+  let nonVoter: Signer
+  let nonProposer: Signer
+  
 
   beforeEach(async function () {
     accounts = await ethers.getSigners();
-    [deployer, voter1, voter2, proposer1, proposer2] = accounts;
+    [deployer, voter1, voter2, proposer1, proposer2, nonVoter, nonProposer] = accounts;
 
     const JointVenture = await ethers.getContractFactory("JointVenture");
     jv = await JointVenture.deploy("name", "description", [voter1.address, voter2.address], [proposer1.address, proposer2.address], 2);
@@ -43,15 +48,16 @@ describe("JointVenture", function () {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       const resBefore = await callInstance.uint1()
       
-      const tx = await jv.connect(voter1).submitTransaction(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
       const receipt = await tx.wait()
-      const txId = getParamFromTxEvent(
+      const proposalId = getParamFromTxEvent(
         receipt,
         "Submission",
-        "transactionId"
+        "proposalId"
       )
   
-      await jv.connect(voter2).confirmTransaction(txId)
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
       
       const resAfter = await callInstance.uint1()
   
@@ -64,15 +70,16 @@ describe("JointVenture", function () {
       const uint1Before = await callInstance.uint1()
       const uint2Before = await callInstance.uint2()
       
-      const tx = await jv.connect(voter1).submitTransaction(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
       const receipt = await tx.wait()
-      const txId = getParamFromTxEvent(
+      const proposalId = getParamFromTxEvent(
         receipt,
         "Submission",
-        "transactionId"
+        "proposalId"
       )
   
-      await jv.connect(voter2).confirmTransaction(txId)
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
       
       const uint1After = await callInstance.uint1()
       const uint2After = await callInstance.uint2()
@@ -88,15 +95,18 @@ describe("JointVenture", function () {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1bytes(bytes)
       const byteArrBefore = await callInstance.byteArray1()
   
-      const tx = await jv.connect(voter1).submitTransaction(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
       const receipt = await tx.wait()
-      const txId = getParamFromTxEvent(
+      const proposalId = getParamFromTxEvent(
         receipt,
         "Submission",
-        "transactionId"
+        "proposalId"
       )
   
-      await jv.connect(voter2).confirmTransaction(txId)
+
+
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
       
       const byteArrAfter = await callInstance.byteArray1()
   
@@ -113,15 +123,16 @@ describe("JointVenture", function () {
       const sendTokens = 10
       const encodedTransfer = await tokenInstance.populateTransaction.mint(jv.address, sendTokens);
       
-      const tx = await jv.connect(voter1).submitTransaction(tokenInstance.address, 0, encodedTransfer.data)
+      const tx = await jv.connect(voter1).submitProposal(tokenInstance.address, 0, encodedTransfer.data)
       const receipt = await tx.wait()
-      const txId = getParamFromTxEvent(
+      const proposalId = getParamFromTxEvent(
         receipt,
         "Submission",
-        "transactionId"
+        "proposalId"
       )
   
-      await jv.connect(voter2).confirmTransaction(txId)
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
       
       const tokensAfter = await tokenInstance.balanceOf(jv.address)
       expect(tokensAfter, "not correct amount").to.equal(sendTokens)
@@ -129,58 +140,291 @@ describe("JointVenture", function () {
   })
 
   context("Playground", () => {
-    //todo 
-    //! only owners can vote
-    //! only proposals and voters can propose
-    //! proposal should be visible from anyone
-    //! change setting to the jv contract (say add new owner)
-    //! transaction should not be executed before the requirements are met
-    //! check state of the transactions
-    //! show revenue split by ETH
-    //! show revenue split by Token
-    //! transfer tokens to parties
-    //! transfer ether to parties
-
-
     //v2
     //! set voting power?
     //! allow working with msg value
 
-    it("get proposalinfo", async () => {
+    it("should get proposal info", async () => {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
-      const resBefore = await callInstance.uint1()
       
       //! Create proposal
-      const tx = await jv.connect(voter1).submitTransaction(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
       const receipt = await tx.wait()
-      const txId = getParamFromTxEvent(
+      const proposalId = getParamFromTxEvent(
         receipt,
         "Submission",
-        "transactionId"
+        "proposalId"
       )
 
-      const proposalState = await jv.transactions(txId)
-      console.log(proposalState);
+      await jv.connect(voter1).confirmProposal(proposalId)
 
+      const proposalState = await jv.proposals(proposalId)
+
+      expect(await jv.name()).to.equal("name")
+      expect(await jv.description()).to.equal("description")
       expect(proposalState.destination, "not correct destination").to.equal(callInstance.address)
       expect(proposalState.value, "not correct value").to.equal("0")
-      expect(proposalState.data, "not correct destination").to.equal(encodedData.data)
-      expect(proposalState.executed, "not correct destination").to.be.false
+      expect(proposalState.data, "not correct data").to.equal(encodedData.data)
+      expect(proposalState.executed, "not correct state").to.be.false
       
+      // //! Confirm tx and change execution state 
+      await jv.connect(voter2).confirmProposal(proposalId)
+      const proposalSateAfter = await jv.proposals(proposalId)
 
-      //! Confirm tx and chagnge execution state 
-      await jv.connect(voter2).confirmTransaction(txId)
-      const proposalSateAfter = await jv.transactions(txId)
-      console.log(proposalSateAfter);
+      expect(proposalSateAfter.executed, "not correct state").to.be.true
+    })
 
-      expect(proposalSateAfter.executed, "not correct destination").to.be.true
-
-        
+    it("Should revert if sender tries to confirm proposal twice", async () => {
+      const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
-      // const resAfter = await callInstance.uint1()
+      //! Create proposal
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
+      const receipt = await tx.wait()
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await expect(
+        jv.connect(voter1).confirmProposal(proposalId)
+      ).to.be.revertedWith("JD: Tx confirmed")
+    })
+
+    it("should submit proposal with a proposer", async () => {
+      const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
+      
+      const tx = await jv.connect(proposer1).submitProposal(callInstance.address, 0, encodedData.data)
+      const receipt = await tx.wait()
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+
+      expect(proposalId, "no proposal id").to.equal("0")
+    })
+
+    it("should confirm proposal with proposer", async () => {
+      const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
+      
+      const tx = await jv.connect(proposer1).submitProposal(callInstance.address, 0, encodedData.data)
+      const receipt = await tx.wait()
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+      await expect(
+        jv.connect(proposer1).confirmProposal(proposalId)
+      ).to.be.revertedWith("JV: Only Voter")
+
+    })
+
+    it("should get details for more 3 proposals", async () => {
+      const encodedData1 = (await callInstance.connect(voter1).populateTransaction.receive1uint(3)).data
+      const encodedData2 = (await callInstance.connect(voter1).populateTransaction.receive1uint(4)).data
+      const encodedData3 = (await callInstance.connect(voter1).populateTransaction.receive1uint(5)).data
+
+      const encData = [encodedData1, encodedData2, encodedData3]
+
+      for (let i = 0; i < encData.length; i++) {
+        await jv.connect(proposer1).submitProposal(callInstance.address, 0, encData[i])
+      }
+
+      const proposals = await jv.getProposals(0,3, true, true)
+
+      expect(proposals.length, "not correct length").to.equal(encData.length)
+    })
+    
+    it("should add new voter", async () => {
+      const initialVoters = await jv.getVoters()
+      expect(initialVoters.length).to.equal(2);
+
+      const encodedData = (await jv.connect(voter1).populateTransaction.addVoter(nonVoter.address)).data
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const receipt = await tx.wait();
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+      const voters = await jv.getVoters()
+
+     
+      expect(voters.length, "not correct length").to.equal(3);
+      expect(voters, "new voter not included").to.include(nonVoter.address)
+    })
+    
+    it("should remove voter", async () => {
+      const encodedData = (await jv.connect(voter1).populateTransaction.removeVoter(voter1.address)).data
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const receipt = await tx.wait();
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+      const voters = await jv.getVoters()
+
+      expect(voters.length, "not correct length").to.equal(1);
+      expect(voters, "new voter not included").not.to.include(voter1.address)
+    })
+    
+    it("should add new proposer", async () => {
+      const initialProposers = await jv.getProposers()
+      expect(initialProposers.length).to.equal(2);
+
+      const encodedData = (await jv.connect(voter1).populateTransaction.addProposer(nonVoter.address)).data
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const receipt = await tx.wait();
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+      const proposers = await jv.getProposers()
+     
+      expect(proposers.length, "not correct length").to.equal(3);
+      expect(proposers, "new voter not included").to.include(nonVoter.address)
+    })
+    
+    it("should remove proposer", async () => {
+      const encodedData = (await jv.connect(voter1).populateTransaction.removeProposer(proposer1.address)).data
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const receipt = await tx.wait();
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+      const proposers = await jv.getProposers()
+
+      expect(proposers.length, "not correct length").to.equal(1);
+      expect(proposers, "new voter not included").not.to.include(voter1.address)
+    })
+    
+    it("should get revenue split by eth", async () => {
+      const oneEth = ethers.utils.parseEther('1')
+
+      let balance = await ethers.provider.getBalance(jv.address)
+      expect(balance).to.equal("0")
+
+      let tx = {
+        to: jv.address,
+        value: oneEth,
+      };
+
+      await deployer.sendTransaction(tx);
+
+      const rs = await jv.getRevenueSplit(zeroAddress);
+      
+      expect(rs, "revenue not correctly split").to.equal(ethers.BigNumber.from(oneEth).div(((await jv.getVoters()).length)))
+    })
+
+    it("should get revenue split by token", async () => {
+      const oneToken = ethers.utils.parseEther('1');
+      await tokenInstance.mint(jv.address, oneToken);
+      
+      const rs = await jv.getRevenueSplit(tokenInstance.address);
+
+      expect(rs, "revenue not correctly split").to.equal(ethers.BigNumber.from(oneToken).div(((await jv.getVoters()).length)))
+    })
+    
+    it("should transfer eth revenue correctly", async () => {
+      const balanceVoter1Before = await ethers.provider.getBalance(voter1.address);
+      const balanceVoter2Before = await ethers.provider.getBalance(voter2.address);
+      const oneEth = ethers.utils.parseEther('1')
+      
+      let fundContract = {
+        to: jv.address,
+        value: oneEth,
+      };
+
+      await deployer.sendTransaction(fundContract);
+
+      const splitData = await jv.populateTransaction.splitRevenue(zeroAddress);
+      const tx = await jv.connect(voter1).submitProposal(jv.address, 0, splitData.data)
+      const receipt = await tx.wait()
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
   
-      // expect(resBefore, "not 0").to.equal("0")
-      // expect(resAfter, "not 3").to.equal("3")
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+
+      let leftInContract = await tokenInstance.balanceOf(jv.address);
+
+      const voters =  (await jv.getVoters()).length
+
+      const balanceVoter1After = await ethers.provider.getBalance(voter1.address);
+      const balanceVoter2After = await ethers.provider.getBalance(voter2.address);
+
+      const res1 = balanceVoter1After.sub(balanceVoter1Before)
+      const res2 = balanceVoter2After.sub(balanceVoter2Before)
+
+      const deviation = ethers.utils.parseUnits("0.0003", "ether") //tx cost
+      
+      expect(res1, "res1 not correct").to.be.closeTo(oneEth.div(voters), deviation)
+      expect(res2, "res2 not correct").to.be.closeTo(oneEth.div(voters), deviation)
+      expect(leftInContract, "contract still has funds").to.be.equal("0")
+    })
+    
+    it("should transfer token revenue correctly", async () => {
+      let balanceVoter1 = await tokenInstance.balanceOf(voter1.address);
+      let balanceVoter2 = await tokenInstance.balanceOf(voter2.address);
+      let leftInContract;
+      expect(balanceVoter1, 'voter1 balance not 0').to.equal("0")
+      expect(balanceVoter2, 'voter2 balance not 0').to.equal("0")
+
+      const oneToken = ethers.utils.parseEther('1');
+      await tokenInstance.mint(jv.address, oneToken);
+
+      const splitData = await jv.populateTransaction.splitRevenue(tokenInstance.address);
+      const tx = await jv.connect(voter1).submitProposal(jv.address, 0, splitData.data)
+      const receipt = await tx.wait()
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+  
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+      
+      balanceVoter1 = await tokenInstance.balanceOf(voter1.address);
+      balanceVoter2 = await tokenInstance.balanceOf(voter2.address);
+      leftInContract = await tokenInstance.balanceOf(jv.address);
+
+      const voters =  (await jv.getVoters()).length
+        
+      expect(leftInContract, "not 0").to.equal("0");
+      expect(balanceVoter1, "balanceVoter1 is not correct").to.equal(oneToken.div(voters))
+      expect(balanceVoter2, "balanceVoter2 is not correct").to.equal(oneToken.div(voters))
+    })
+
+    it("must fail if nonVoter tries to confirm", async () => {})
+
+    it("must fail if nonVoter tries to submit", async () => {
+      const encodedData = await callInstance.connect(nonVoter).populateTransaction.receive1uint(3)
+      await expect(
+        jv.connect(nonVoter).submitProposal(callInstance.address, 0, encodedData.data)
+      ).to.be.revertedWith("JV: Nor Voter or Proposer")
     })
 
   })

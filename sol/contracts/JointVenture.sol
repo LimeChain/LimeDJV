@@ -1,21 +1,27 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
-import "hardhat/console.sol";
 
-/// @title JointVenture contract represented as Multisig wallet - Allows multiple parties to agree on transactions before execution.
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+
+/// @title JointVenture contract represented as Multisig wallet - Allows multiple parties to agree on proposals before execution.
 contract JointVenture {
+    using Address for address payable;
     /*
      *  Events
      */
-    event Confirmation(address indexed sender, uint256 indexed transactionId);
-    event Revocation(address indexed sender, uint256 indexed transactionId);
-    event Submission(uint256 indexed transactionId);
-    event Execution(uint256 indexed transactionId);
-    event ExecutionFailure(uint256 indexed transactionId);
+    event Confirmation(address indexed sender, uint256 indexed proposalId);
+    event Revocation(address indexed sender, uint256 indexed proposalId);
+    event Submission(uint256 indexed proposalId);
+    event Execution(uint256 indexed proposalId);
+    event ExecutionFailure(uint256 indexed proposalId);
     event Deposit(address indexed sender, uint256 value);
-    event OwnerAddition(address indexed owner);
-    event OwnerRemoval(address indexed owner);
+    event VoterAddition(address indexed voter);
+    event VoterRemoval(address indexed voter);
+    event ProposerAddition(address indexed voter);
+    event ProposerRemoval(address indexed voter);
     event RequirementChange(uint256 required);
+    event RevenueSplit(uint256 revenue, address[] voters);
 
     /*
      *  Constants
@@ -25,19 +31,19 @@ contract JointVenture {
     /*
      *  Storage
      */
-
     string public name;
     string public description;
 
-    mapping(uint256 => Transaction) public transactions;
+    mapping(uint256 => Proposal) public proposals;
     mapping(uint256 => mapping(address => bool)) public confirmations;
-    mapping(address => bool) public isOwner;
-    address[] public owners;
+    mapping(address => bool) public isVoter;
+    mapping(address => bool) public isProposer;
+    address[] public voters;
     address[] public proposers;
     uint256 public required;
-    uint256 public transactionCount;
+    uint256 public proposalCount;
 
-    struct Transaction {
+    struct Proposal {
         address destination;
         uint256 value;
         bytes data;
@@ -47,41 +53,59 @@ contract JointVenture {
     /*
      *  Modifiers
      */
-    modifier onlyWallet() {
-        require(msg.sender == address(this));
+    modifier onlyJointVenture() {
+        require(msg.sender == address(this), "JV: Only JV");
         _;
     }
 
-    modifier ownerDoesNotExist(address owner) {
-        require(!isOwner[owner]);
+    modifier voterDoesNotExist(address voter) {
+        require(!isVoter[voter], "JV: Voter Exists");
         _;
     }
 
-    modifier ownerExists(address owner) {
-        require(isOwner[owner], "JV: Only Owner");
+    modifier proposerDoesNotExist(address proposer) {
+        require(!isProposer[proposer], "JV: Proposer Exists");
         _;
     }
 
-    modifier transactionExists(uint256 transactionId) {
+    modifier voterExists(address voter) {
+        require(isVoter[voter], "JV: Only Voter");
+        _;
+    }
+
+    modifier proposerExists(address proposer) {
+        require(isProposer[proposer], "JV: Only Proposer");
+        _;
+    }
+
+    modifier voterOrProposer(address sender) {
         require(
-            transactions[transactionId].destination != address(0),
+            isVoter[sender] || isProposer[sender],
+            "JV: Nor Voter or Proposer"
+        );
+        _;
+    }
+
+    modifier proposalExists(uint256 proposalId) {
+        require(
+            proposals[proposalId].destination != address(0),
             "JV: Tx Exists"
         );
         _;
     }
 
-    modifier confirmed(uint256 transactionId, address owner) {
-        require(confirmations[transactionId][owner], "JV: Tx confirmed");
+    modifier confirmed(uint256 proposalId, address voter) {
+        require(confirmations[proposalId][voter], "JV: Tx not confirmed");
         _;
     }
 
-    modifier notConfirmed(uint256 transactionId, address owner) {
-        require(!confirmations[transactionId][owner], "JD: Tx not confirmed");
+    modifier notConfirmed(uint256 proposalId, address voter) {
+        require(!confirmations[proposalId][voter], "JD: Tx confirmed");
         _;
     }
 
-    modifier notExecuted(uint256 transactionId) {
-        require(!transactions[transactionId].executed, "JV: Tx not executed");
+    modifier notExecuted(uint256 proposalId) {
+        require(!proposals[proposalId].executed, "JV: Tx executed");
         _;
     }
 
@@ -90,12 +114,12 @@ contract JointVenture {
         _;
     }
 
-    modifier validRequirement(uint256 ownerCount, uint256 _required) {
+    modifier validRequirement(uint256 voterCount, uint256 _required) {
         require(
-            ownerCount <= MAX_OWNER_COUNT &&
-                _required <= ownerCount &&
+            voterCount <= MAX_OWNER_COUNT &&
+                _required <= voterCount &&
                 _required != 0 &&
-                ownerCount != 0
+                voterCount != 0
         );
         _;
     }
@@ -105,152 +129,183 @@ contract JointVenture {
         if (msg.value > 0) emit Deposit(msg.sender, msg.value);
     }
 
-    //todo create a function that can estimate the revenue based on eth or token
-    //todo currently might send ether to contract and then split by half as well as token?
-    //todo write tests for that
 
     /*
      * Public functions
      */
-    // todo constructor should have proposers as well
-    // todo we should have modifier for proposers
-    // todo only voters and proposer can create proposals
-    // todo only voters can vote
-    /// @dev Contract constructor sets initial owners and required number of confirmations.
+    /// @dev Contract constructor sets initial voters and required number of confirmations.
     /// @param _name Name of the particular JV.
     /// @param _description Description of the particular JV.
-    /// @param _owners List of initial owners.
+    /// @param _voters List of initial voters.
     /// @param _proposers List of initial proposers.
     /// @param _required Number of required confirmations.
     constructor(
         string memory _name,
         string memory _description,
-        address[] memory _owners,
+        address[] memory _voters,
         address[] memory _proposers,
         uint256 _required
-    ) validRequirement(_owners.length, _required) {
-        for (uint256 i = 0; i < _owners.length; i++) {
-            require(!isOwner[_owners[i]] && _owners[i] != address(0));
-            isOwner[_owners[i]] = true;
+    ) validRequirement(_voters.length, _required) {
+        for (uint256 i = 0; i < _voters.length; i++) {
+            require(!isVoter[_voters[i]] && _voters[i] != address(0));
+            isVoter[_voters[i]] = true;
         }
-        owners = _owners;
+
+        for (uint256 i = 0; i < _proposers.length; i++) {
+            require(!isProposer[_proposers[i]] && _proposers[i] != address(0));
+            isProposer[_proposers[i]] = true;
+        }
+        voters = _voters;
+        proposers = _proposers;
         required = _required;
         name = _name;
         description = _description;
     }
 
-    /// @dev Allows to add a new owner. Transaction has to be sent by wallet.
-    /// @param owner Address of new owner.
-    function addOwner(address owner)
+    /// @dev Allows to add a new voter. Proposal has to be sent by wallet.
+    /// @param voter Address of new voter.
+    function addVoter(address voter)
         public
-        onlyWallet
-        ownerDoesNotExist(owner)
-        notNull(owner)
-        validRequirement(owners.length + 1, required)
+        onlyJointVenture
+        voterDoesNotExist(voter)
+        notNull(voter)
+        validRequirement(voters.length + 1, required)
     {
-        isOwner[owner] = true;
-        owners.push(owner);
-        emit OwnerAddition(owner);
+        isVoter[voter] = true;
+        voters.push(voter);
+        emit VoterAddition(voter);
     }
 
-    /// @dev Allows to remove an owner. Transaction has to be sent by wallet.
-    /// @param owner Address of owner.
-    function removeOwner(address owner) public onlyWallet ownerExists(owner) {
-        isOwner[owner] = false;
-        for (uint256 i = 0; i < owners.length - 1; i++)
-            if (owners[i] == owner) {
-                owners[i] = owners[owners.length - 1];
+    /// @dev Allows to remove an voter. Proposal has to be sent by wallet.
+    /// @param voter Address of voter.
+    function removeVoter(address voter)
+        public
+        onlyJointVenture
+        voterExists(voter)
+    {
+        isVoter[voter] = false;
+        for (uint256 i = 0; i < voters.length - 1; i++)
+            if (voters[i] == voter) {
+                voters[i] = voters[voters.length - 1];
                 break;
             }
-        owners.pop();
-        if (required > owners.length) changeRequirement(owners.length);
-        emit OwnerRemoval(owner);
+        voters.pop();
+        if (required > voters.length) changeRequirement(voters.length);
+        emit VoterRemoval(voter);
     }
 
-    /// @dev Allows to replace an owner with a new owner. Transaction has to be sent by wallet.
-    /// @param owner Address of owner to be replaced.
-    /// @param newOwner Address of new owner.
-    function replaceOwner(address owner, address newOwner)
+    /// @dev Allows to add a new proposer. Proposal has to be sent by wallet.
+    /// @param proposer Address of new proposer.
+    function addProposer(address proposer)
         public
-        onlyWallet
-        ownerExists(owner)
-        ownerDoesNotExist(newOwner)
+        onlyJointVenture
+        proposerDoesNotExist(proposer)
+        notNull(proposer)
     {
-        for (uint256 i = 0; i < owners.length; i++)
-            if (owners[i] == owner) {
-                owners[i] = newOwner;
+        isProposer[proposer] = true;
+        proposers.push(proposer);
+        emit ProposerAddition(proposer);
+    }
+
+    /// @dev Allows to remove an proposer. Proposal has to be sent by wallet.
+    /// @param proposer Address of proposer.
+    function removeProposer(address proposer)
+        public
+        onlyJointVenture
+        proposerExists(proposer)
+    {
+        isVoter[proposer] = false;
+        for (uint256 i = 0; i < proposers.length - 1; i++)
+            if (proposers[i] == proposer) {
+                proposers[i] = proposers[proposers.length - 1];
                 break;
             }
-        isOwner[owner] = false;
-        isOwner[newOwner] = true;
-        emit OwnerRemoval(owner);
-        emit OwnerAddition(newOwner);
+        proposers.pop();
+        emit ProposerRemoval(proposer);
     }
 
-    /// @dev Allows to change the number of required confirmations. Transaction has to be sent by wallet.
+    /// @dev Allows to replace an voter with a new voter. Proposal has to be sent by wallet.
+    /// @param voter Address of voter to be replaced.
+    /// @param newVoter Address of new voter.
+    function replaceVoter(address voter, address newVoter)
+        public
+        onlyJointVenture
+        voterExists(voter)
+        voterDoesNotExist(newVoter)
+    {
+        for (uint256 i = 0; i < voters.length; i++)
+            if (voters[i] == voter) {
+                voters[i] = newVoter;
+                break;
+            }
+        isVoter[voter] = false;
+        isVoter[newVoter] = true;
+        emit VoterRemoval(voter);
+        emit VoterAddition(newVoter);
+    }
+
+    /// @dev Allows to change the number of required confirmations. Proposal has to be sent by wallet.
     /// @param _required Number of required confirmations.
     function changeRequirement(uint256 _required)
         public
-        onlyWallet
-        validRequirement(owners.length, _required)
+        onlyJointVenture
+        validRequirement(voters.length, _required)
     {
         required = _required;
         emit RequirementChange(_required);
     }
 
-    // todo this might be renamed to submitProposal
-    /// @dev Allows an owner to submit and confirm a transaction.
-    /// @param destination Transaction target address.
-    /// @param value Transaction ether value.
-    /// @param data Transaction data payload.
-    /// @return transactionId
-    function submitTransaction(
+    /// @dev Allows an voter to submit and confirm a proposal.
+    /// @param destination Proposal target address.
+    /// @param value Proposal ether value.
+    /// @param data Proposal data payload.
+    /// @return proposalId
+    function submitProposal(
         address destination,
         uint256 value,
         bytes calldata data
-    ) public returns (uint256 transactionId) {
-        transactionId = addTransaction(destination, value, data);
-        confirmTransaction(transactionId); //todo this might not be here. Only proposer or voter should call this function without necessity to confirm a tx
+    ) public voterOrProposer(msg.sender) returns (uint256 proposalId) {
+        proposalId = addProposal(destination, value, data);
     }
 
-    /// @dev Allows an owner to confirm a transaction.
-    /// @param transactionId Transaction ID.
-    function confirmTransaction(
-        uint256 transactionId //todo additional param here whether tx is accepted / rejected by the msg.sender
+    /// @dev Allows an voter to confirm a proposal.
+    /// @param proposalId Proposal ID.
+    function confirmProposal(
+        uint256 proposalId //todo additional param here whether tx is accepted / rejected by the msg.sender
     )
         public
-        ownerExists(msg.sender)
-        transactionExists(transactionId)
-        notConfirmed(transactionId, msg.sender)
+        voterExists(msg.sender)
+        proposalExists(proposalId)
+        notConfirmed(proposalId, msg.sender)
     {
-        confirmations[transactionId][msg.sender] = true;
-        emit Confirmation(msg.sender, transactionId);
-        executeTransaction(transactionId);
+        confirmations[proposalId][msg.sender] = true;
+        emit Confirmation(msg.sender, proposalId);
+        executeProposal(proposalId);
     }
 
-    // todo this might not be needed since the confirm transaction would have the boolean
-    /// @dev Allows an owner to revoke a confirmation for a transaction.
-    /// @param transactionId Transaction ID.
-    function revokeConfirmation(uint256 transactionId)
+    // todo this might not be needed since the confirm proposal would have the boolean
+    /// @dev Allows an voter to revoke a confirmation for a proposal.
+    /// @param proposalId Proposal ID.
+    function revokeConfirmation(uint256 proposalId)
         public
-        ownerExists(msg.sender)
-        confirmed(transactionId, msg.sender)
-        notExecuted(transactionId)
+        voterExists(msg.sender)
+        confirmed(proposalId, msg.sender)
+        notExecuted(proposalId)
     {
-        confirmations[transactionId][msg.sender] = false;
-        emit Revocation(msg.sender, transactionId);
+        confirmations[proposalId][msg.sender] = false;
+        emit Revocation(msg.sender, proposalId);
     }
 
-    /// @dev Allows anyone to execute a confirmed transaction.
-    /// @param transactionId Transaction ID.
-    function executeTransaction(uint256 transactionId)
+    /// @dev Allows anyone to execute a confirmed proposal.
+    /// @param proposalId Proposal ID.
+    function executeProposal(uint256 proposalId)
         public
-        ownerExists(msg.sender)
-        confirmed(transactionId, msg.sender)
-        notExecuted(transactionId)
+        voterExists(msg.sender)
+        confirmed(proposalId, msg.sender)
+        notExecuted(proposalId)
     {
-        if (isConfirmed(transactionId)) {
-            Transaction storage txn = transactions[transactionId];
+        if (isConfirmed(proposalId)) {
+            Proposal storage txn = proposals[proposalId];
             txn.executed = true;
             if (
                 external_call(
@@ -259,9 +314,9 @@ contract JointVenture {
                     txn.data.length,
                     txn.data
                 )
-            ) emit Execution(transactionId);
+            ) emit Execution(proposalId);
             else {
-                emit ExecutionFailure(transactionId);
+                emit ExecutionFailure(proposalId);
                 txn.executed = false;
             }
         }
@@ -276,7 +331,6 @@ contract JointVenture {
         bytes memory data
     ) internal returns (bool) {
         bool result;
-
         //todo rn msg.value could not be sent via external_call should be revised
         assembly {
             let x := mload(0x40) // "Allocate" memory for output (0x40 is where "free memory" pointer is stored by convention)
@@ -296,120 +350,191 @@ contract JointVenture {
         return result;
     }
 
-    /// @dev Returns the confirmation status of a transaction.
-    /// @param transactionId Transaction ID.
+    /// @dev Returns the confirmation status of a proposal.
+    /// @param proposalId Proposal ID.
     /// @return Confirmation status.
-    function isConfirmed(uint256 transactionId) public returns (bool) {
+    function isConfirmed(uint256 proposalId) public view returns (bool) {
         uint256 count = 0;
-        for (uint256 i = 0; i < owners.length; i++) {
-            if (confirmations[transactionId][owners[i]]) count += 1;
+        for (uint256 i = 0; i < voters.length; i++) {
+            if (confirmations[proposalId][voters[i]]) count += 1;
             if (count == required) return true;
         }
+    }
+
+    function splitRevenue(address token) external payable onlyJointVenture {
+        uint256 revenue = getRevenueSplit(token);
+
+        require(revenue > 0, "JV: Nothing to split");
+
+        if (token == address(0)) {
+            for (uint256 i = 0; i < voters.length; i++) {
+                address payable voter = payable(voters[i]);
+                payable(voter).sendValue(revenue);
+            }
+        } else {
+            for (uint256 i = 0; i < voters.length; i++) {
+                IERC20(token).transfer(voters[i], revenue);
+            }
+        }
+
+        emit RevenueSplit(revenue, voters);
     }
 
     /*
      * Internal functions
      */
-    /// @dev Adds a new transaction to the transaction mapping, if transaction does not exist yet.
-    /// @param destination Transaction target address.
-    /// @param value Transaction ether value.
-    /// @param data Transaction data payload.
-    /// @return transactionId
-    function addTransaction(
+    /// @dev Adds a new proposal to the proposal mapping, if proposal does not exist yet.
+    /// @param destination Proposal target address.
+    /// @param value Proposal ether value.
+    /// @param data Proposal data payload.
+    /// @return proposalId
+    function addProposal(
         address destination,
         uint256 value,
         bytes calldata data
-    ) internal notNull(destination) returns (uint256 transactionId) {
-        transactionId = transactionCount;
-        transactions[transactionId] = Transaction({
+    ) internal notNull(destination) returns (uint256 proposalId) {
+        proposalId = proposalCount;
+        proposals[proposalId] = Proposal({
             destination: destination,
             value: value,
             data: data,
             executed: false
         });
-        transactionCount += 1;
-        emit Submission(transactionId);
+        proposalCount += 1;
+        emit Submission(proposalId);
     }
 
     /*
      * Web3 call functions
      */
-    /// @dev Returns number of confirmations of a transaction.
-    /// @param transactionId Transaction ID.
+    /// @dev Returns number of confirmations of a proposal.
+    /// @param proposalId Proposal ID.
     /// @return count - Number of confirmations.
-    function getConfirmationCount(uint256 transactionId)
+    function getConfirmationCount(uint256 proposalId)
         public
         returns (uint256 count)
     {
-        for (uint256 i = 0; i < owners.length; i++)
-            if (confirmations[transactionId][owners[i]]) count += 1;
+        for (uint256 i = 0; i < voters.length; i++)
+            if (confirmations[proposalId][voters[i]]) count += 1;
     }
 
-    /// @dev Returns total number of transactions after filers are applied.
-    /// @param pending Include pending transactions.
-    /// @param executed Include executed transactions.
-    /// @return count - Total number of transactions after filters are applied.
-    function getTransactionCount(bool pending, bool executed)
+    /// @dev Returns total number of proposals after filers are applied.
+    /// @param pending Include pending proposals.
+    /// @param executed Include executed proposals.
+    /// @return count - Total number of proposals after filters are applied.
+    function getProposalCount(bool pending, bool executed)
         public
         returns (uint256 count)
     {
-        for (uint256 i = 0; i < transactionCount; i++)
+        for (uint256 i = 0; i < proposalCount; i++)
             if (
-                (pending && !transactions[i].executed) ||
-                (executed && transactions[i].executed)
+                (pending && !proposals[i].executed) ||
+                (executed && proposals[i].executed)
             ) count += 1;
     }
 
-    /// @dev Returns list of owners.
-    /// @return List of owner addresses.
-    function getOwners() public returns (address[] memory) {
-        return owners;
+    /// @dev Returns list of voters.
+    /// @return List of voter addresses.
+    function getVoters() public view returns (address[] memory) {
+        return voters;
     }
 
-    /// @dev Returns array with owner addresses, which confirmed transaction.
-    /// @param transactionId Transaction ID.
-    /// @return _confirmations - array of owner addresses.
-    function getConfirmations(uint256 transactionId)
+    /// @dev Returns list of proposers.
+    /// @return List of voter addresses.
+    function getProposers() public view returns (address[] memory) {
+        return proposers;
+    }
+
+    /// @dev Returns array with voter addresses, which confirmed proposal.
+    /// @param proposalId Proposal ID.
+    /// @return _confirmations - array of voter addresses.
+    function getConfirmations(uint256 proposalId)
         public
+        view
         returns (address[] memory _confirmations)
     {
-        address[] memory confirmationsTemp = new address[](owners.length);
+        address[] memory confirmationsTemp = new address[](voters.length);
         uint256 count = 0;
         uint256 i;
-        for (i = 0; i < owners.length; i++)
-            if (confirmations[transactionId][owners[i]]) {
-                confirmationsTemp[count] = owners[i];
+        for (i = 0; i < voters.length; i++)
+            if (confirmations[proposalId][voters[i]]) {
+                confirmationsTemp[count] = voters[i];
                 count += 1;
             }
         _confirmations = new address[](count);
         for (i = 0; i < count; i++) _confirmations[i] = confirmationsTemp[i];
     }
 
-    /// @dev Returns list of transaction IDs in defined range.
-    /// @param from Index start position of transaction array.
-    /// @param to Index end position of transaction array.
-    /// @param pending Include pending transactions.
-    /// @param executed Include executed transactions.
-    /// @return _transactionIds - array of transaction IDs.
-    function getTransactionIds(
+    /// @dev Returns list of proposal IDs in defined range.
+    /// @param from Index start position of proposal array.
+    /// @param to Index end position of proposal array.
+    /// @param pending Include pending proposals.
+    /// @param executed Include executed proposals.
+    /// @return _proposalIds - array of proposal IDs.
+    function getProposalIds(
         uint256 from,
         uint256 to,
         bool pending,
         bool executed
-    ) public returns (uint256[] memory _transactionIds) {
-        uint256[] memory transactionIdsTemp = new uint256[](transactionCount);
+    ) public view returns (uint256[] memory _proposalIds) {
+        uint256[] memory proposalIdsTemp = new uint256[](proposalCount);
         uint256 count = 0;
         uint256 i;
-        for (i = 0; i < transactionCount; i++)
+        for (i = 0; i < proposalCount; i++)
             if (
-                (pending && !transactions[i].executed) ||
-                (executed && transactions[i].executed)
+                (pending && !proposals[i].executed) ||
+                (executed && proposals[i].executed)
             ) {
-                transactionIdsTemp[count] = i;
+                proposalIdsTemp[count] = i;
                 count += 1;
             }
-        _transactionIds = new uint256[](to - from);
+        _proposalIds = new uint256[](to - from);
+        for (i = from; i < to; i++) _proposalIds[i - from] = proposalIdsTemp[i];
+    }
+
+    // todo this function must be taken outside of the contract. Here for POC
+    /// @dev Returns list of proposal IDs in defined range.
+    /// @param from Index start position of proposal array.
+    /// @param to Index end position of proposal array.
+    /// @param pending Include pending proposals.
+    /// @param executed Include executed proposals.
+    /// @return _proposals - array of proposals.
+    function getProposals(
+        uint256 from,
+        uint256 to,
+        bool pending,
+        bool executed
+    ) public view returns (Proposal[] memory _proposals) {
+        uint256[] memory proposalIdsTemp = new uint256[](proposalCount);
+        uint256 count = 0;
+        uint256 i;
+        for (i = 0; i < proposalCount; i++)
+            if (
+                (pending && !proposals[i].executed) ||
+                (executed && proposals[i].executed)
+            ) {
+                proposalIdsTemp[count] = i;
+                count += 1;
+            }
+        _proposals = new Proposal[](to - from);
         for (i = from; i < to; i++)
-            _transactionIds[i - from] = transactionIdsTemp[i];
+            _proposals[i - from] = proposals[proposalIdsTemp[i]];
+    }
+
+    /// @dev Returns split of revenue for each voter based on the current balance in the contract
+    /// @param token token which funds will be split from.
+    /// @return split - amount which each voter will receive.
+    function getRevenueSplit(address token)
+        public
+        view
+        returns (uint256 split)
+    {
+        if (token == address(0)) {
+            if (address(this).balance > 0) {
+                return address(this).balance / voters.length;
+            }
+        } else if (IERC20(token).balanceOf(address(this)) > 0) {
+            return IERC20(token).balanceOf(address(this)) / voters.length;
+        }
     }
 }
