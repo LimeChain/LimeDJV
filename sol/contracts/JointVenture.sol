@@ -343,18 +343,6 @@ contract JointVenture is VoterManager, ProposerManager {
             ) count += 1;
     }
 
-    /// @dev Returns list of voters.
-    /// @return List of voter addresses.
-    function getVoters() public view returns (address[] memory) {
-        return voters;
-    }
-
-    /// @dev Returns list of proposers.
-    /// @return List of voter addresses.
-    function getProposers() public view returns (address[] memory) {
-        return proposers;
-    }
-
     /// @dev Returns array with voter addresses, which confirmed proposal.
     /// @param proposalId Proposal ID.
     /// @return _confirmations - array of voter addresses.

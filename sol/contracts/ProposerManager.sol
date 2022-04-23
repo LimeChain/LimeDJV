@@ -55,4 +55,14 @@ contract ProposerManager {
         proposers.pop();
         emit ProposerRemoval(proposer);
     }
+
+    /*
+     * Web3 call functions
+     */
+
+    /// @dev Returns list of proposers.
+    /// @return List of voter addresses.
+    function getProposers() public view returns (address[] memory) {
+        return proposers;
+    }
 }
