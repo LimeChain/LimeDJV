@@ -186,7 +186,7 @@ describe("JointVenture", function () {
     //! set voting power?
     //! allow working with msg value
 
-    it.only("should get proposal info", async () => {
+    it("should get proposal info", async () => {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
       //! Create proposal
