@@ -1,3 +1,4 @@
+import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Proposers from "../components/Proposers";
@@ -10,14 +11,15 @@ import Wrapper from "../components/Shared/Wrapper";
 import StepBar from "../components/StepBar";
 import VentureDetails from "../components/VentureDetails";
 import Voters from "../components/Voters";
-import { FACTORY_ADDRESS } from "../constants";
+import { NETWORK_CONFIG } from "../config/network";
 import useFactoryContract from "../hooks/useFactoryContract";
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import { mappingChainIdConfig } from "../utils";
 
 const CreateVenture = () => {
   const { ventureDetails, voters, proposers } = useGlobalContext();
-  const factoryContract = useFactoryContract(FACTORY_ADDRESS);
   const router = useRouter();
+  const factoryContract = useFactoryContract();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);

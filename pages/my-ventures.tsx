@@ -9,17 +9,18 @@ import Title from "../components/Shared/Title";
 import Wrapper from "../components/Shared/Wrapper";
 import StepBar, { StepBarProps } from "../components/StepBar";
 import VentureCard from "../components/VentureCard";
-import { FACTORY_ADDRESS } from "../constants";
+import { NETWORK_CONFIG } from "../config/network";
 import useFactoryContract from "../hooks/useFactoryContract";
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import { mappingChainIdConfig } from "../utils";
 
 const MyVentures = () => {
   const [isModalShow, setIsModalShown] = useState(false);
-  const { account, library } = useWeb3React();
+  const { account, library, chainId } = useWeb3React();
   const router = useRouter();
-  const factoryContract = useFactoryContract(FACTORY_ADDRESS);
   const [myVentures, setMyVentures] = useState([]);
   const { isWalletConnected } = useGlobalContext();
+  const factoryContract = useFactoryContract();
 
   const onSubmit = () => {
     setIsModalShown(true);
@@ -29,10 +30,11 @@ const MyVentures = () => {
   useEffect(() => {
     const loadVentures = async () => {
       setMyVentures([])
+    
 
       if (!account) return;
       if (!isWalletConnected) return;
-
+      console.log(factoryContract)
       const instantiations = await factoryContract.getInstantiations(account);
       setMyVentures(instantiations);
     };

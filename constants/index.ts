@@ -14,7 +14,6 @@ import { NETWORK_CONFIG } from "../config/network";
 
   // Contract addresses
   export const ALBT_TOKEN_ADDRESS = "";
-  export const FACTORY_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Localhost address
 
   // Network chain ids
   export const SUPPORTED_CHAINIDS: number[] | undefined = Object.values(

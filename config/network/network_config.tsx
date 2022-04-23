@@ -15,6 +15,7 @@ export const config = {
         blockExplorerUrl: "https://rinkeby.etherscan.io",
         refreshClaimTimestamp: 15000,
       },
+      factory_address: "0x09ace5Ea96F18A674b3BDC32Ada36eA2BE349a4C"
     },
     bsc: {
       network: {
@@ -32,6 +33,7 @@ export const config = {
         blockExplorerUrl: "https://testnet.bscscan.com",
         refreshClaimTimestamp: 15000,
       },
+      factory_address: "0x54B34418581f1627C3a02859bd3d22f2F741Df07"
     },
     polygon: {
       network: {
@@ -49,6 +51,7 @@ export const config = {
         blockExplorerUrl: "https://explorer-mumbai.maticvigil.com",
         refreshClaimTimestamp: 15000,
       },
+      factory_address: "0x54B34418581f1627C3a02859bd3d22f2F741Df07"
     },
     optimistic: {
       network: {
@@ -66,6 +69,7 @@ export const config = {
         blockExplorerUrl: "https://kovan-optimistic.etherscan.io",
         refreshClaimTimestamp: 15000,
       },
+      factory_address: "0x54B34418581f1627C3a02859bd3d22f2F741Df07"
     },
   };
   
