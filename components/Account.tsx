@@ -8,6 +8,7 @@ import useMetaMaskOnboarding from "../hooks/useMetaMaskOnboarding";
 import { getNetworkIndex } from "../utils/network";
 import { addNetwork, changeCurrentNetwork, getMetamaskNetworkParams, MetamaskErrorCodes } from "../utils/metamask";
 import Button from "./Shared/Button";
+import Select from "./Shared/Select";
 
 type AccountProps = {
   triedToEagerConnect: boolean;
