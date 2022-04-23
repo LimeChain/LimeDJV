@@ -129,6 +129,7 @@ contract JointVenture {
         if (msg.value > 0) emit Deposit(msg.sender, msg.value);
     }
 
+
     /*
      * Public functions
      */
@@ -270,7 +271,7 @@ contract JointVenture {
     /// @dev Allows an voter to confirm a proposal.
     /// @param proposalId Proposal ID.
     function confirmProposal(
-        uint256 proposalId //todo additional param here whether tx is accepted / rejected by the msg.sender
+        uint256 proposalId
     )
         public
         voterExists(msg.sender)
@@ -282,7 +283,6 @@ contract JointVenture {
         executeProposal(proposalId);
     }
 
-    // todo this might not be needed since the confirm proposal would have the boolean
     /// @dev Allows an voter to revoke a confirmation for a proposal.
     /// @param proposalId Proposal ID.
     function revokeConfirmation(uint256 proposalId)

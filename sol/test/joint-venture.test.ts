@@ -3,9 +3,9 @@
 
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { Contract, Signer } from "ethers";
+import { Signer } from "ethers";
 import {JointVenture, TestCalls, ERC20Mock} from '../typechain';
-import { findEventByName, getParamFromTxEvent } from "./utils";
+import { getParamFromTxEvent } from "./utils";
 
 const zeroAddress = ethers.constants.AddressZero;
 
@@ -19,12 +19,11 @@ describe("JointVenture", function () {
   let voter1: Signer, voter2: Signer;
   let proposer1: Signer, proposer2: Signer;
   let nonVoter: Signer
-  let nonProposer: Signer
   
 
   beforeEach(async function () {
     accounts = await ethers.getSigners();
-    [deployer, voter1, voter2, proposer1, proposer2, nonVoter, nonProposer] = accounts;
+    [deployer, voter1, voter2, proposer1, proposer2, nonVoter] = accounts;
 
     const JointVenture = await ethers.getContractFactory("JointVenture");
     jv = await JointVenture.deploy("name", "description", [voter1.address, voter2.address], [proposer1.address, proposer2.address], 2);
@@ -102,8 +101,6 @@ describe("JointVenture", function () {
         "Submission",
         "proposalId"
       )
-  
-
 
       await jv.connect(voter1).confirmProposal(proposalId)
       await jv.connect(voter2).confirmProposal(proposalId)
@@ -219,7 +216,6 @@ describe("JointVenture", function () {
       await expect(
         jv.connect(proposer1).confirmProposal(proposalId)
       ).to.be.revertedWith("JV: Only Voter")
-
     })
 
     it("should get details for more 3 proposals", async () => {
@@ -255,7 +251,6 @@ describe("JointVenture", function () {
       await jv.connect(voter2).confirmProposal(proposalId)
       const voters = await jv.getVoters()
 
-     
       expect(voters.length, "not correct length").to.equal(3);
       expect(voters, "new voter not included").to.include(nonVoter.address)
     })
@@ -426,7 +421,5 @@ describe("JointVenture", function () {
         jv.connect(nonVoter).submitProposal(callInstance.address, 0, encodedData.data)
       ).to.be.revertedWith("JV: Nor Voter or Proposer")
     })
-
   })
-
 });
