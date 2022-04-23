@@ -27,8 +27,8 @@ const Review = () => {
         <div className="inner-wrapper">
           <div className="label">Proposers</div>
           <div>
-            {proposers.map((proposer) => {
-              return <p id="proposers">{proposer.address}</p>;
+            {proposers.map((proposer, index) => {
+              return <p key={index} id="proposers">{proposer.address}</p>;
             })}
           </div>
         </div>

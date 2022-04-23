@@ -1,4 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
+import { Contract } from "ethers";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Proposers from "../components/Proposers";
@@ -12,14 +13,15 @@ import StepBar from "../components/StepBar";
 import VentureDetails from "../components/VentureDetails";
 import Voters from "../components/Voters";
 import { NETWORK_CONFIG } from "../config/network";
-import useFactoryContract from "../hooks/useFactoryContract";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import { mappingChainIdConfig } from "../utils";
+import Factory_ABI from "../contracts/Factory.json";
 
 const CreateVenture = () => {
   const { ventureDetails, voters, proposers } = useGlobalContext();
   const router = useRouter();
-  const factoryContract = useFactoryContract();
+  const { account, library, chainId } = useWeb3React();
+
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -85,6 +87,9 @@ const CreateVenture = () => {
     const proposersArray = proposers.map((proposer) => {
       return proposer.address;
     });
+    const config = NETWORK_CONFIG[mappingChainIdConfig[chainId]];
+    const factoryAddress = config.factory_address;
+    const factoryContract = new Contract(factoryAddress, Factory_ABI, library.getSigner(account));
     try {
       const tx = await factoryContract.create(
         ventureDetails.name,
@@ -133,8 +138,8 @@ const CreateVenture = () => {
                 nextClickHandler={nextClickHandler}
               ></StepBar>
               <div className="steps-wrapper">
-                {progressSteps.map((step) => {
-                  return <div hidden={!step.isActive}>{step.children}</div>;
+                {progressSteps.map((step, key) => {
+                  return <div key={key} hidden={!step.isActive}>{step.children}</div>;
                 })}
               </div>
             </div>

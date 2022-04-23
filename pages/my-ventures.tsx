@@ -1,3 +1,4 @@
+import { Contract } from "@ethersproject/contracts";
 import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/dist/client/router";
 import React, { useEffect, useState } from "react";
@@ -8,8 +9,11 @@ import SideMenu from "../components/Shared/SideMenu";
 import Title from "../components/Shared/Title";
 import Wrapper from "../components/Shared/Wrapper";
 import VentureCard from "../components/VentureCard";
-import useFactoryContract from "../hooks/useFactoryContract";
 import { useGlobalContext } from "../hooks/useGlobalContext";
+import Factory_ABI from "../contracts/Factory.json";
+import { NETWORK_CONFIG } from "../config/network";
+import { mappingChainIdConfig } from "../utils";
+
 
 const MyVentures = () => {
   const [isModalShow, setIsModalShown] = useState(false);
@@ -17,8 +21,7 @@ const MyVentures = () => {
   const router = useRouter();
   const [myVentures, setMyVentures] = useState([]);
   const { isWalletConnected } = useGlobalContext();
-  const factoryContract = useFactoryContract();
-
+  
   const onSubmit = () => {
     setIsModalShown(true);
     console.log("SUBMITTED");
@@ -30,6 +33,10 @@ const MyVentures = () => {
 
       if (!account) return;
       if (!isWalletConnected) return;
+      const config = NETWORK_CONFIG[mappingChainIdConfig[chainId]];
+      const factoryAddress = config.factory_address;
+      const factoryContract = new Contract(factoryAddress, Factory_ABI, library.getSigner(account));
+
       const instantiations = await factoryContract.getInstantiations(account);
       setMyVentures(instantiations);
     };

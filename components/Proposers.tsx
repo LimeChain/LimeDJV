@@ -51,7 +51,7 @@ const Proposers = () => {
               <>
                 {index === 0 && (
                   <>
-                    <label className="form-label">Proposers</label>
+                    <label key={index} className="form-label">Proposers</label>
                     <br></br>
                   </>
                 )}
