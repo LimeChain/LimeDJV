@@ -11,7 +11,7 @@ const VentureCard = ({ address, onClick }) => {
   const [ventureInfo, setVentureInfo] = useState({});
 
   useEffect(() => {
-    if (!account) {
+    if(!account) {
       return;
     }
     const getVentureInfo = async () => {

@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import Button from "./Shared/Button";
-
 export type StepBarProps = {
   // steps: {
   //   index: number;

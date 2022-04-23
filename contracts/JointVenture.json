@@ -498,11 +498,11 @@
           "type": "address"
         }
       ],
-      "name": "getRevenueSplit",
+      "name": "getRevenue",
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "split",
+          "name": "total",
           "type": "uint256"
         }
       ],

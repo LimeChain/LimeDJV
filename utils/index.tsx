@@ -48,3 +48,10 @@ export const parseBalance = (
   decimals = 18,
   decimalsToDisplay = 3
 ) => parseFloat(formatUnits(value, decimals)).toFixed(decimalsToDisplay);
+
+export const mappingChainIdConfig: { [id: number]: string } = {
+  4: "eth",
+  97: "bsc",
+  80001: "polygon",
+  69: "optimistic",
+};
