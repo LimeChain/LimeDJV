@@ -1,8 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.11;
-import "hardhat/console.sol";
 
-/// @title Contract for testing low-level calls issued from the multisig wallet
+/// @title Contract for testing low-level calls issued from the JointVenture contract
 contract TestCalls {
     // msg.data.length of the latest call to "receive" methods
     uint256 public lastMsgDataLength;
@@ -18,10 +17,6 @@ contract TestCalls {
         lastMsgDataLength = msg.data.length;
         lastMsgValue = msg.value;
         _;
-    }
-
-    constructor() payable setMsgFields {
-        // This constructor will be used to test the creation via multisig wallet
     }
 
     function receive1uint(uint256 a) public payable setMsgFields {

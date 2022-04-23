@@ -39,30 +39,11 @@ describe("Factory", function () {
   //! try to create a proposal the multisig contract to change say voting power
   //! check the voting power for example
   //! in the vote function people should have another property stating whether they have accepted/rejected the proposal
-  //! only owners can vote
+  //! only voters can vote
   //! only proposals and voters can propose
   //! proposal should be visible from anyone
 
-  it("example utils", async function () {
-    let tx = await factory.create("name", "description", [voter1.address, voter2.address], [proposer1.address, proposer2.address],2);
-    const receipt = await tx.wait()
-
-   
-    const event = findEventByName(receipt, "ContractInstantiation", "sender", "instantiation")
-    console.log(event);
-
-    const test = await factory.isInstantiation(event.instantiation)
-    const test2 = await factory.isInstantiation(ethers.constants.AddressZero)
-    
-    console.log('test: ', test);
-    console.log('test: ', test2);
-
-    //! getParam:  0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-    let getParam = getParamFromTxEvent(receipt, "ContractInstantiation", 'sender')
-    console.log('getParam: ', getParam);
-  });
-
-  it("should get joint ventures from different owners", async () => {
+  it("should get joint ventures from different voters", async () => {
     const voters = [voter1.address, voter2.address];
     const proposers = [proposer1.address, proposer2.address];
     const required = 2;
@@ -74,7 +55,7 @@ describe("Factory", function () {
     expect(await factory.getInstantiationCount(voter1.address), "they don't match").to.equal("1");
   })
 
-  it("should get joint ventures from different owners", async () => {
+  it("should get joint ventures from different voters", async () => {
     const voters = [voter1.address, voter2.address];
     const proposers = [proposer1.address, proposer2.address];
 
@@ -84,7 +65,6 @@ describe("Factory", function () {
     await factory.connect(deployer).create( "name2", "description2", voters, proposers, required)
 
     const instantiations = await factory.getInstantiations(deployer.address)
-    console.log(instantiations);
     
     expect(instantiations.length, "not a proper length").to.equal(2)
     expect(ethers.utils.isAddress(instantiations[0]), "not a valid address").to.be.true
