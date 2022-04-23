@@ -9,6 +9,7 @@ import { getNetworkIndex } from "../utils/network";
 import { addNetwork, changeCurrentNetwork, getMetamaskNetworkParams, MetamaskErrorCodes } from "../utils/metamask";
 import Button from "./Shared/Button";
 import Select from "./Shared/Select";
+import { shortenEthereumAddress } from "../utils";
 
 type AccountProps = {
   triedToEagerConnect: boolean;
@@ -192,7 +193,3 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
   );
 }
 export default Account;
-function shortenEthereumAddress(account: string | null | undefined) {
-  throw new Error("Function not implemented.");
-}
-
