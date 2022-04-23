@@ -8,6 +8,8 @@ import {JointVenture, MockVentureCalls, ERC20Mock} from '../typechain';
 import { getParamFromTxEvent } from "./utils";
 
 const zeroAddress = ethers.constants.AddressZero;
+const proposalName = "proposalName";
+const proposalDesc = "description"
 
 describe("JointVenture", function () {
   let jv: JointVenture;
@@ -47,7 +49,7 @@ describe("JointVenture", function () {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       const resBefore = await callInstance.uint1()
       
-      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -83,7 +85,7 @@ describe("JointVenture", function () {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       const resBefore = await callInstance.uint1()
       
-      const tx = await jv.connect(voter1).submitProposal(callInstance.address, transferBalance, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, proposalName, proposalDesc, transferBalance, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -112,7 +114,7 @@ describe("JointVenture", function () {
       const uint1Before = await callInstance.uint1()
       const uint2Before = await callInstance.uint2()
       
-      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -137,7 +139,7 @@ describe("JointVenture", function () {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1bytes(bytes)
       const byteArrBefore = await callInstance.byteArray1()
   
-      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -163,7 +165,7 @@ describe("JointVenture", function () {
       const sendTokens = 10
       const encodedTransfer = await tokenInstance.populateTransaction.mint(jv.address, sendTokens);
       
-      const tx = await jv.connect(voter1).submitProposal(tokenInstance.address, 0, encodedTransfer.data)
+      const tx = await jv.connect(voter1).submitProposal(tokenInstance.address, proposalName, proposalDesc, 0, encodedTransfer.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -184,11 +186,11 @@ describe("JointVenture", function () {
     //! set voting power?
     //! allow working with msg value
 
-    it("should get proposal info", async () => {
+    it.only("should get proposal info", async () => {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
       //! Create proposal
-      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -203,6 +205,8 @@ describe("JointVenture", function () {
       expect(await jv.name()).to.equal("name")
       expect(await jv.description()).to.equal("description")
       expect(proposalState.destination, "not correct destination").to.equal(callInstance.address)
+      expect(proposalState.name, "not correct name").to.equal(proposalName)
+      expect(proposalState.description, "not correct description").to.equal(proposalDesc)
       expect(proposalState.value, "not correct value").to.equal("0")
       expect(proposalState.data, "not correct data").to.equal(encodedData.data)
       expect(proposalState.executed, "not correct state").to.be.false
@@ -218,7 +222,7 @@ describe("JointVenture", function () {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
       //! Create proposal
-      const tx = await jv.connect(voter1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -235,7 +239,7 @@ describe("JointVenture", function () {
     it("should submit proposal with a proposer", async () => {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
-      const tx = await jv.connect(proposer1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(proposer1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -249,7 +253,7 @@ describe("JointVenture", function () {
     it("must fail if proposer tries to vote", async () => {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
-      const tx = await jv.connect(proposer1).submitProposal(callInstance.address, 0, encodedData.data)
+      const tx = await jv.connect(proposer1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -269,7 +273,7 @@ describe("JointVenture", function () {
       const encData = [encodedData1, encodedData2, encodedData3]
 
       for (let i = 0; i < encData.length; i++) {
-        await jv.connect(proposer1).submitProposal(callInstance.address, 0, encData[i])
+        await jv.connect(proposer1).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encData[i])
       }
 
       const proposals = await jv.getProposals(0,3, true, true)
@@ -282,7 +286,7 @@ describe("JointVenture", function () {
       expect(initialVoters.length).to.equal(2);
       
       const encodedData = (await jv.connect(voter1).populateTransaction.addVoter(nonVoter.address)).data
-      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, proposalName, proposalDesc, 0, encodedData)
       const receipt = await tx.wait();
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -301,7 +305,7 @@ describe("JointVenture", function () {
     
     it("should remove voter", async () => {
       const encodedData = (await jv.connect(voter1).populateTransaction.removeVoter(voter1.address)).data
-      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, proposalName, proposalDesc, 0, encodedData)
       const receipt = await tx.wait();
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -322,7 +326,7 @@ describe("JointVenture", function () {
       expect(initialProposers.length).to.equal(2);
 
       const encodedData = (await jv.connect(voter1).populateTransaction.addProposer(nonVoter.address)).data
-      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, proposalName, proposalDesc, 0, encodedData)
       const receipt = await tx.wait();
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -340,7 +344,7 @@ describe("JointVenture", function () {
     
     it("should remove proposer", async () => {
       const encodedData = (await jv.connect(voter1).populateTransaction.removeProposer(proposer1.address)).data
-      const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
+      const tx = await jv.connect(proposer1).submitProposal(jv.address, proposalName, proposalDesc, 0, encodedData)
       const receipt = await tx.wait();
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -396,7 +400,7 @@ describe("JointVenture", function () {
       await deployer.sendTransaction(fundContract);
 
       const splitData = await jv.populateTransaction.splitRevenue(zeroAddress);
-      const tx = await jv.connect(voter1).submitProposal(jv.address, 0, splitData.data)
+      const tx = await jv.connect(voter1).submitProposal(jv.address, proposalName, proposalDesc, 0, splitData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -435,7 +439,7 @@ describe("JointVenture", function () {
       await tokenInstance.mint(jv.address, oneToken);
 
       const splitData = await jv.populateTransaction.splitRevenue(tokenInstance.address);
-      const tx = await jv.connect(voter1).submitProposal(jv.address, 0, splitData.data)
+      const tx = await jv.connect(voter1).submitProposal(jv.address, proposalName, proposalDesc, 0, splitData.data)
       const receipt = await tx.wait()
       const proposalId = getParamFromTxEvent(
         receipt,
@@ -462,7 +466,7 @@ describe("JointVenture", function () {
     it("must fail if nonVoter tries to submit", async () => {
       const encodedData = await callInstance.connect(nonVoter).populateTransaction.receive1uint(3)
       await expect(
-        jv.connect(nonVoter).submitProposal(callInstance.address, 0, encodedData.data)
+        jv.connect(nonVoter).submitProposal(callInstance.address, proposalName, proposalDesc, 0, encodedData.data)
       ).to.be.revertedWith("JV: Nor Voter or Proposer")
     })
   })
