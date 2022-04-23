@@ -18,16 +18,16 @@ The framework consists of a single smart contract that governs the decision maki
 
 ### Voting
 
-- Ability to specify proposers - proposers and voters can propose, but only voters can vote
-- Ability to change voters and proposers - only through a vote
+- Ability to specify proposers - proposers and voters can propose, but only voters can vote.
+- Ability to change voters and proposers - only through a vote.
 - Ability to propose an execution - should have multiple (up to 10) targets, calldata-s and values. Can be done by proposer or voter.
-- Ability to vote on executing the proposal or rejecting the proposal
+- Ability to vote on executing the proposal or rejecting the proposal.
     - If the proposal reaches majority votes (2 out of the 2), this should also execute the transaction(s).
 
 ### Revenue splits
 
-- Ability to receive ETH and ERC20(thats a given) in the Joint Venture contracts
-- Ability to trigger an equal split for the outstanding balance of ETH
+- Ability to receive ETH and ERC20(thats a given) in the Joint Venture contracts.
+- Ability to trigger an equal split for the outstanding balance of ETH.
 - Ability to trigger an equal split for the outstanding balance of ERC20 specified by its token address.
 
 ### User Experience
