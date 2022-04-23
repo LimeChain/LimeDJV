@@ -13,7 +13,15 @@ const ActiveVenture = () => {
   return (
     <>
       <SideMenu />
-    
+      <Modal
+        description={
+          "Splitting the revenue will withdraw the funds from the contract and distribute them to the Voters according to their Power."
+        }
+        title="Do you want to continue"
+        show={() => {}}
+        handleClose={() => {}}
+        onSubmit={() => {}}
+      />
       <Wrapper>
         <div className="create">
           <Title text={`My ventures > title of venture`} />
@@ -50,28 +58,21 @@ const ActiveVenture = () => {
                     <img src="" alt="icon" />
                     <div className="split-revenue--value">
                       <div>Revenue</div>
-                      <div className="amount">
-                      </div>
+                      <div className="amount"></div>
                     </div>
                   </div>
 
-                  <div>
-                    {/* TODO: add button */}
-                  </div>
+                  <div>{/* TODO: add button */}</div>
                 </div>
               </div>
               <div className="right">
                 <div className="title">Active proposals</div>
-                <div>
-                 {/* TODO: show active proposals */}
-                </div>
+                <div>{/* TODO: show active proposals */}</div>
                 <p className="all" onClick={() => history.push("/proposals")}>
                   See all
                 </p>
               </div>
-              <div className="accounts-wrapper">
-                {/* TODO: Accounts */}
-              </div>
+              <div className="accounts-wrapper">{/* TODO: Accounts */}</div>
             </>
           )}
         </div>
