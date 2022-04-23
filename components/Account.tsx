@@ -2,14 +2,15 @@ import { useWeb3React } from "@web3-react/core";
 import { UserRejectedRequestError } from "@web3-react/injected-connector";
 import { useEffect, useState } from "react";
 import { NETWORK_CONFIG } from "../config/network";
-import { ConnectorNames, connectorsByName, walletConnect } from "../connectors";
+import { ConnectorNames, connectorsByName, injected, walletConnect } from "../connectors";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import useMetaMaskOnboarding from "../hooks/useMetaMaskOnboarding";
-import { getNetworkIndex } from "../utils/network";
+import { shortenEthereumAddress } from "../utils";
 import { addNetwork, changeCurrentNetwork, getMetamaskNetworkParams, MetamaskErrorCodes } from "../utils/metamask";
+import { getNetworkIndex } from "../utils/network";
+import NativeCurrencyBalance from "./NativeCurrencyBalance";
 import Button from "./Shared/Button";
 import Select from "./Shared/Select";
-import { shortenEthereumAddress } from "../utils";
 
 type AccountProps = {
   triedToEagerConnect: boolean;
@@ -161,6 +162,7 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
   </>}
   {isWalletConnected && 
       <>
+      <NativeCurrencyBalance></NativeCurrencyBalance>
       <Button
         className='margin-right'
         label={`${shortenEthereumAddress(account)}`}
