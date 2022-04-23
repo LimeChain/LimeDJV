@@ -34,7 +34,6 @@ const MyVentures = () => {
 
       if (!account) return;
       if (!isWalletConnected) return;
-      console.log(factoryContract)
       const instantiations = await factoryContract.getInstantiations(account);
       setMyVentures(instantiations);
     };
