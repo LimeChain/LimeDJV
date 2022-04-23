@@ -1,11 +1,9 @@
-import { useWeb3React } from "@web3-react/core";
 import Head from "next/head";
 import Link from "next/link";
 import Button from "../components/Shared/Button";
 import { useRouter } from "next/dist/client/router";
 
 function Home() {
-  const { account, library, deactivate, chainId, error } = useWeb3React();
 
   const router = useRouter();
   

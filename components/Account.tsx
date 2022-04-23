@@ -1,13 +1,13 @@
 import { useWeb3React } from "@web3-react/core";
 import { UserRejectedRequestError } from "@web3-react/injected-connector";
 import { useEffect, useState } from "react";
-import { NETWORK_CONFIG } from "../../config/network";
-import { ConnectorNames, connectorsByName, walletConnect } from "../../connectors";
-import { useGlobalContext } from "../../hooks/useGlobalContext";
-import useMetaMaskOnboarding from "../../hooks/useMetaMaskOnboarding";
-import { getNetworkIndex } from "../../utils/network";
+import { NETWORK_CONFIG } from "../config/network";
+import { ConnectorNames, connectorsByName, walletConnect } from "../connectors";
+import { useGlobalContext } from "../hooks/useGlobalContext";
+import useMetaMaskOnboarding from "../hooks/useMetaMaskOnboarding";
+import { getNetworkIndex } from "../utils/network";
 import { addNetwork, changeCurrentNetwork, getMetamaskNetworkParams, MetamaskErrorCodes } from "../utils/metamask";
-import Button from "./Button";
+import Button from "./Shared/Button";
 
 type AccountProps = {
   triedToEagerConnect: boolean;
