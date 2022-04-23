@@ -34,15 +34,6 @@ describe("Factory", function () {
 
   afterEach(async function () {});
 
-  // todo
-  //done create a proposal to a some other contract to change a property
-  //! try to create a proposal the multisig contract to change say voting power
-  //! check the voting power for example
-  //! in the vote function people should have another property stating whether they have accepted/rejected the proposal
-  //! only voters can vote
-  //! only proposals and voters can propose
-  //! proposal should be visible from anyone
-
   it("should get joint ventures from different voters", async () => {
     const voters = [voter1.address, voter2.address];
     const proposers = [proposer1.address, proposer2.address];
