@@ -20,6 +20,8 @@ import { NETWORK_CONFIG } from "../config/network";
     NETWORK_CONFIG
   )?.map((config: any): number => config.network.chainId);
 
+  export const ALBT_TOKEN_ADDRESS = "";
+  export const FACTORY_ADDRESS = "";
   export const localStorageKeys: { [key: string]: string } = {
     walletConnection: "ventures:connected",
   };
