@@ -11,14 +11,31 @@ async function verify(): Promise<void> {
     );
   }
 
-  // verify Greeter contract
+  // verify JointVentureFactory contract
   try {
     await hre.run("verify:verify", {
-      address: contracts.greeter,
-      constructorArguments: ["Hello, Hardhat!"],
+      address: contracts.jvFactory,
     });
   } catch (error: any) {
-    logError("Greeter", error.message);
+    logError("JointVentureFactory", error.message);
+  }
+
+  // verify MockVentureCalls contract
+  try {
+    await hre.run("verify:verify", {
+      address: contracts.mockVentureCalls,
+    });
+  } catch (error: any) {
+    logError("MockVentureCalls", error.message);
+  }
+
+  // verify MockToken contract
+  try {
+    await hre.run("verify:verify", {
+      address: contracts.token,
+    });
+  } catch (error: any) {
+    logError("MockToken", error.message);
   }
 }
 

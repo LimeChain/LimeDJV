@@ -2,7 +2,7 @@
 pragma solidity 0.8.11;
 
 /// @title Contract for testing low-level calls issued from the JointVenture contract
-contract TestCalls {
+contract MockVentureCalls {
     // msg.data.length of the latest call to "receive" methods
     uint256 public lastMsgDataLength;
 

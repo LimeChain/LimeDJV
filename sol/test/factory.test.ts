@@ -3,9 +3,8 @@
 
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { Contract, Signer } from "ethers";
-import {JointVentureFactory, JointVenture} from '../typechain';
-import { findEventByName, getParamFromTxEvent } from "./utils";
+import { Signer } from "ethers";
+import {JointVentureFactory, } from '../typechain';
 
 describe("Factory", function () {
   let factory: JointVentureFactory;

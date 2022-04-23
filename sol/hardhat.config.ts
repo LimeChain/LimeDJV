@@ -1,5 +1,4 @@
 import * as dotenv from "dotenv";
-
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
@@ -19,10 +18,17 @@ task("deploy", "Deploys contracts").setAction(async () => {
   await deploy();
 });
 
-task("verify-greeter", "Verifies contracts").setAction(async () => {
+task("verify-factory", "Verifies contracts").setAction(async () => {
   const { verify } = await lazyImport("./scripts/verify");
   await verify();
 });
+
+task("verify-jv", "Verifies contracts")
+  .addParam("jv", "Joint venture contract address")
+  .setAction(async (args) => {
+    const { verify } = await lazyImport("./scripts/verify-jv");
+    await verify(args.jv);
+  });
 
 const config: HardhatUserConfig = {
   solidity: {

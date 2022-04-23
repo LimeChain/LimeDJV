@@ -12,13 +12,32 @@ async function deploy(): Promise<void> {
     `Account balance: ${(await deployer.getBalance()).toString()} \n`
   );
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!", txObject);
+  /**
+   * Deploying JointVentureFactory
+   */
+  const JointVentureFactory = await ethers.getContractFactory(
+    "JointVentureFactory"
+  );
+  const jvf = await JointVentureFactory.deploy(txObject);
+  await jvf.deployed();
 
-  await greeter.deployed();
+  /**
+   * Deploying MockVentureCalls
+   */
+  const MockVentureCalls = await ethers.getContractFactory("MockVentureCalls");
+  const mockVentureCalls = await MockVentureCalls.deploy(txObject);
+  await mockVentureCalls.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  /**
+   * Deploying MockToken
+   */
+  const MockToken = await ethers.getContractFactory("MockToken");
+  const token = await MockToken.deploy(txObject);
+  await token.deployed();
+
+  console.log("JointVentureFactory deployed to:", jvf.address);
+  console.log("MockVentureCalls deployed to:", mockVentureCalls.address);
+  console.log("MockToken deployed to:", token.address);
 
   fs.writeFileSync(
     "./contracts.json",
@@ -26,7 +45,9 @@ async function deploy(): Promise<void> {
       {
         network: hre.network.name,
         deployer: await deployer.getAddress(),
-        greeter: greeter.address,
+        jvFactory: jvf.address,
+        mockVentureCalls: mockVentureCalls.address,
+        token: token.address,
       },
       null,
       2

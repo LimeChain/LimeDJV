@@ -4,14 +4,14 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { Signer } from "ethers";
-import {JointVenture, TestCalls, ERC20Mock} from '../typechain';
+import {JointVenture, MockVentureCalls, ERC20Mock} from '../typechain';
 import { getParamFromTxEvent } from "./utils";
 
 const zeroAddress = ethers.constants.AddressZero;
 
 describe("JointVenture", function () {
   let jv: JointVenture;
-  let callInstance: TestCalls
+  let callInstance: MockVentureCalls
   let tokenInstance: ERC20Mock
 
   let accounts: Signer[];
@@ -29,7 +29,7 @@ describe("JointVenture", function () {
     jv = await JointVenture.deploy("name", "description", [voter1.address, voter2.address], [proposer1.address, proposer2.address], 2);
     await jv.deployed();
 
-    const CallInstance = await ethers.getContractFactory("TestCalls");
+    const CallInstance = await ethers.getContractFactory("MockVentureCalls");
     callInstance = await CallInstance.deploy();
     await callInstance.deployed();
 
@@ -62,6 +62,49 @@ describe("JointVenture", function () {
   
       expect(resBefore, "not 0").to.equal("0")
       expect(resAfter, "not 3").to.equal("3")
+    })
+
+    it("should change a setting through receive1uint", async () => {
+      const oneEth = ethers.utils.parseEther('1')
+      const transferBalance = 100; //wei
+      let balanceJV = await ethers.provider.getBalance(jv.address)
+      let balanceCallInstance;
+
+      expect(balanceJV).to.equal("0")
+
+      let txFund = {
+        to: jv.address,
+        value: oneEth,
+      };
+
+      await deployer.sendTransaction(txFund);
+      balanceJV = await ethers.provider.getBalance(jv.address)
+    
+      const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
+      const resBefore = await callInstance.uint1()
+      
+      const tx = await jv.connect(voter1).submitProposal(callInstance.address, transferBalance, encodedData.data)
+      const receipt = await tx.wait()
+      const proposalId = getParamFromTxEvent(
+        receipt,
+        "Submission",
+        "proposalId"
+      )
+      
+      await jv.connect(voter1).confirmProposal(proposalId)
+      await jv.connect(voter2).confirmProposal(proposalId)
+
+      balanceJV = await ethers.provider.getBalance(jv.address)
+      balanceCallInstance = await ethers.provider.getBalance(callInstance.address)
+
+      const resAfter = await callInstance.uint1()
+        
+      expect(await callInstance.lastMsgDataLength()).to.equal(32 + 4) // 32 bytes offset + 32 bytes data length + 4 bytes method signature
+      expect(await callInstance.lastMsgValue()).to.equal(transferBalance) // 32 bytes offset + 32 bytes data length + 4 bytes method signature
+      expect(resBefore, "not 0").to.equal("0")
+      expect(resAfter, "not 3").to.equal("3")
+      expect(balanceJV, "balanceJV is not correct").to.equal(oneEth.sub(transferBalance))
+      expect(balanceCallInstance, "balanceCallInstance is not correct").to.equal(transferBalance)
     })
   
     it("should change a setting through receive2uints", async () => {
@@ -203,7 +246,7 @@ describe("JointVenture", function () {
       expect(proposalId, "no proposal id").to.equal("0")
     })
 
-    it("should confirm proposal with proposer", async () => {
+    it("must fail if proposer tries to vote", async () => {
       const encodedData = await callInstance.connect(voter1).populateTransaction.receive1uint(3)
       
       const tx = await jv.connect(proposer1).submitProposal(callInstance.address, 0, encodedData.data)
@@ -218,7 +261,7 @@ describe("JointVenture", function () {
       ).to.be.revertedWith("JV: Only Voter")
     })
 
-    it("should get details for more 3 proposals", async () => {
+    it("should get details for 3 proposals", async () => {
       const encodedData1 = (await callInstance.connect(voter1).populateTransaction.receive1uint(3)).data
       const encodedData2 = (await callInstance.connect(voter1).populateTransaction.receive1uint(4)).data
       const encodedData3 = (await callInstance.connect(voter1).populateTransaction.receive1uint(5)).data
@@ -249,6 +292,7 @@ describe("JointVenture", function () {
 
       await jv.connect(voter1).confirmProposal(proposalId)
       await jv.connect(voter2).confirmProposal(proposalId)
+      
       const voters = await jv.getVoters()
 
       expect(voters.length, "not correct length").to.equal(3);
