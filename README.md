@@ -1,4 +1,4 @@
-LimeDJV is a framework for decentralized joint ventures between two or more DAOs. 
+LimeDJV is a framework for decentralized joint ventures between DAOs. 
 
 ## Overview
 
