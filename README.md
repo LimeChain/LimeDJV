@@ -1,34 +1,35 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+LimeDJV is a framework for decentralized joint ventures between two or more DAOs. 
 
-## Getting Started
+## Overview
 
-First, run the development server:
+The goal of this project is to create a framework where two or more DAOs can have a Joint Venture. A Joint Venture is a partnership where the participants agree on progressing (developing, designing, marketing etc.) a product together and sharing the proceeds of it. This is quite a common occurrence in the traditional corporate world and it would make sense for DAOs to have joint ventures on products that lie in the intersections between their domains.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+Participating DAOs get a pre-defined revenue split of the JV profits that can be adjusted through a vote.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The framework consists of a single smart contract that governs the decision making and revenue splitting.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Features
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### General
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+- Ability to specify 2 DAOs (called voters) with equal rights
+- Ability to change voters and proposers - only through a vote
+- The system should be able to work regardless of the type of governance for the DAO (Governor Bravo, Snapshot + Multisig, Barn-style DAO, or else)
 
-## Learn More
+### Voting
 
-To learn more about Next.js, take a look at the following resources:
+- Ability to specify proposers - proposers and voters can propose, but only voters can vote
+- Ability to change voters and proposers - only through a vote
+- Ability to propose an execution - should have multiple (up to 10) targets, calldata-s and values. Can be done by proposer or voter.
+- Ability to vote on executing the proposal or rejecting the proposal
+    - If the proposal reaches majority votes (2 out of the 2), this should also execute the transaction(s).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Revenue splits
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Ability to receive ETH and ERC20(thats a given) in the Joint Venture contracts
+- Ability to trigger an equal split for the outstanding balance of ETH
+- Ability to trigger an equal split for the outstanding balance of ERC20 specified by its token address.
 
-## Deploy on Vercel
+### User Experience
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Ability for the client side applications of the Joint Ventures app to help the DAOs with the creation of their DAO vote parameters (target, value, calldata).
