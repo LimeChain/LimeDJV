@@ -33,6 +33,8 @@ contract JointVenture is VoterManager, ProposerManager {
 
     struct Proposal {
         address destination;
+        string name;
+        string description;
         uint256 value;
         bytes data;
         bool executed;
@@ -170,15 +172,19 @@ contract JointVenture is VoterManager, ProposerManager {
 
     /// @dev Allows an voter to submit and confirm a proposal.
     /// @param destination Proposal target address.
+    /// @param name Proposal name.
+    /// @param description Proposal description.
     /// @param value Proposal ether value.
     /// @param data Proposal data payload.
     /// @return proposalId
     function submitProposal(
         address destination,
+        string calldata name,
+        string calldata description,
         uint256 value,
         bytes calldata data
     ) public voterOrProposer(msg.sender) returns (uint256 proposalId) {
-        proposalId = addProposal(destination, value, data);
+        proposalId = addProposal(destination, name, description, value, data);
     }
 
     /// @dev Allows an voter to confirm a proposal.
@@ -295,17 +301,23 @@ contract JointVenture is VoterManager, ProposerManager {
      */
     /// @dev Adds a new proposal to the proposal mapping, if proposal does not exist yet.
     /// @param destination Proposal target address.
+    /// @param name Proposal name.
+    /// @param description Proposal description.
     /// @param value Proposal ether value.
     /// @param data Proposal data payload.
     /// @return proposalId
     function addProposal(
         address destination,
+        string calldata name,
+        string calldata description,
         uint256 value,
         bytes calldata data
     ) internal notNull(destination) returns (uint256 proposalId) {
         proposalId = proposalCount;
         proposals[proposalId] = Proposal({
             destination: destination,
+            name: name,
+            description: description,
             value: value,
             data: data,
             executed: false
