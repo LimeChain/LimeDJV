@@ -4,9 +4,10 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./VoterManager.sol";
+import "./ProposerManager.sol";
 
 /// @title JointVenture contract represented as Multisig wallet - Allows multiple parties to agree on proposals before execution.
-contract JointVenture is VoterManager {
+contract JointVenture is VoterManager, ProposerManager {
     using Address for address payable;
     /*
      *  Events
@@ -17,9 +18,6 @@ contract JointVenture is VoterManager {
     event Execution(uint256 indexed proposalId);
     event ExecutionFailure(uint256 indexed proposalId);
     event Deposit(address indexed sender, uint256 value);
-
-    event ProposerAddition(address indexed voter);
-    event ProposerRemoval(address indexed voter);
     event RevenueSplit(uint256 revenue, address[] voters);
 
     /*
@@ -30,8 +28,7 @@ contract JointVenture is VoterManager {
 
     mapping(uint256 => Proposal) public proposals;
     mapping(uint256 => mapping(address => bool)) public confirmations;
-    mapping(address => bool) public isProposer;
-    address[] public proposers;
+
     uint256 public proposalCount;
 
     struct Proposal {
@@ -46,16 +43,6 @@ contract JointVenture is VoterManager {
      */
     modifier onlyJointVenture() {
         require(msg.sender == address(this), "JV: Only JV");
-        _;
-    }
-
-    modifier proposerDoesNotExist(address proposer) {
-        require(!isProposer[proposer], "JV: Proposer Exists");
-        _;
-    }
-
-    modifier proposerExists(address proposer) {
-        require(isProposer[proposer], "JV: Only Proposer");
         _;
     }
 
@@ -154,29 +141,15 @@ contract JointVenture is VoterManager {
     function addProposer(address proposer)
         public
         onlyJointVenture
-        proposerDoesNotExist(proposer)
         notNull(proposer)
     {
-        isProposer[proposer] = true;
-        proposers.push(proposer);
-        emit ProposerAddition(proposer);
+        _addProposer(proposer);
     }
 
     /// @dev Allows to remove an proposer. Proposal has to be sent by wallet.
     /// @param proposer Address of proposer.
-    function removeProposer(address proposer)
-        public
-        onlyJointVenture
-        proposerExists(proposer)
-    {
-        isVoter[proposer] = false;
-        for (uint256 i = 0; i < proposers.length - 1; i++)
-            if (proposers[i] == proposer) {
-                proposers[i] = proposers[proposers.length - 1];
-                break;
-            }
-        proposers.pop();
-        emit ProposerRemoval(proposer);
+    function removeProposer(address proposer) public onlyJointVenture {
+        _removeProposer(proposer);
     }
 
     /// @dev Allows to replace an voter with a new voter. Proposal has to be sent by wallet.
