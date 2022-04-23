@@ -67,9 +67,10 @@ const MyVentures = () => {
           }}
         ></Button>
         <div className="grid">
-          {myVentures.map((venture) => {
+          {myVentures.map((venture, index) => {
             return (
               <VentureCard
+                key={index}
                 onClick={() => router.push(`/active-ventures/${venture}`)}
                 address={venture}
               />

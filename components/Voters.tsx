@@ -1,9 +1,9 @@
 import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const Voters = () => {
-  const { voters, setVoters } = useGlobalContext();
+  const { voters, setVoters }:any = useGlobalContext();
 
-  const updateAddress = (val) => {
+  const updateAddress = (val:any) => {
     const value = val.target.value;
     if (val.target.id == "address1") {
       setVoters({

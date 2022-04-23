@@ -11,12 +11,12 @@ export interface FunctionParam {
 }
 
 const ProposalActions = () => {
-  const { proposalActions, setProposalActions } = useGlobalContext();
+  const { proposalActions, setProposalActions }:any = useGlobalContext();
   const [contractFunctions, setContractFunctions] = useState<string[]>([]);
   const [functionInputs, setFunctionInputs] = useState([]);
   const [parameterValues, setParameterValues] = useState<FunctionParam[]>([]);
 
-  const updateFunctionParam = (actionIndex, paramName, event) => {
+  const updateFunctionParam = (actionIndex:any, paramName:any, event:any) => {
     event.preventDefault();
 
     const value = event.target.value;
@@ -40,7 +40,7 @@ const ProposalActions = () => {
     setProposalActions(newActions);
   }
 
-  const updateProposalAction = (event) => {
+  const updateProposalAction = (event:any) => {
     event.preventDefault();
 
     const value = event.target.value;
@@ -61,7 +61,7 @@ const ProposalActions = () => {
     setProposalActions(newActions);
   };
 
-  const addProposalHandler = (e) => {
+  const addProposalHandler = (e:any) => {
     e.preventDefault();
 
     let newProposalActions = [...proposalActions] as ProposalAction[];
@@ -89,7 +89,7 @@ const ProposalActions = () => {
         .map(key => functionFragments[key].name));
   }
 
-  const loadFunctionInputs = (address, functionName: string) => {
+  const loadFunctionInputs = (address:any, functionName: string) => {
     const contract = new Contract(address, MOCK_TOKEN_ABI);
     const functionFragment = contract.interface.getFunction(functionName);
     const inputs = functionFragment.inputs.map(input => {
@@ -104,7 +104,7 @@ const ProposalActions = () => {
     <>
       <div className="wrapper">
         <form>
-          {proposalActions.map((action: ProposalAction, actionIndex) => {
+          {proposalActions.map((action: ProposalAction, actionIndex:any) => {
             return (
               <>
                 <label

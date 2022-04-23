@@ -29,45 +29,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "_name",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "_description",
-        type: "string",
-      },
-      {
-        internalType: "address[]",
-        name: "_voters",
-        type: "address[]",
-      },
-      {
-        internalType: "address[]",
-        name: "_proposers",
-        type: "address[]",
-      },
-      {
-        internalType: "uint256",
-        name: "_required",
-        type: "uint256",
-      },
-    ],
-    name: "create",
-    outputs: [
-      {
-        internalType: "address",
-        name: "wallet",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "creator",
         type: "address",

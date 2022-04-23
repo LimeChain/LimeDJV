@@ -5,6 +5,7 @@ import { NETWORK_CONFIG } from "../config/network";
 import { ConnectorNames, connectorsByName, injected, walletConnect } from "../connectors";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 import useMetaMaskOnboarding from "../hooks/useMetaMaskOnboarding";
+import { Network } from "../types";
 import { shortenEthereumAddress } from "../utils";
 import { addNetwork, changeCurrentNetwork, getMetamaskNetworkParams, MetamaskErrorCodes } from "../utils/metamask";
 import { getNetworkIndex } from "../utils/network";
@@ -188,7 +189,7 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
         }}
         size="sm"
         selected={networkIndex}
-        onSelectOptionChange={(option) => changeNetwork(option)}
+        onSelectOptionChange={(option:any) => changeNetwork(option)}
         />
   </>
 

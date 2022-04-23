@@ -3,7 +3,7 @@ import { ProposalAction } from "../../types";
 import { FunctionParam } from "./ProposalActions";
 
 const ProposalReview = () => {
-  const { proposalDetails, proposalActions } = useGlobalContext();
+  const { proposalDetails, proposalActions }:any = useGlobalContext();
   console.log(proposalDetails);
 
   const details = proposalDetails.proposalDetails;
@@ -22,7 +22,7 @@ const ProposalReview = () => {
         </div>
 
         <div className="inner-wrapper" style={{ flexWrap: "wrap" }}>
-          {proposalActions.map((action: ProposalAction, index) => {
+          {proposalActions.map((action: ProposalAction, index:any) => {
             return (
               <>
                 <div className="inner-wrapper">

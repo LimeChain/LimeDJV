@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "./Button";
 
-const Modal = ({ title, description, show = false, onSubmit, handleClose }) => {
+const Modal = ({ title, description, show = false, onSubmit, handleClose }:any) => {
   const showHideClassName = show ? "modal display-block" : "modal display-none";
 
   return (

@@ -1,7 +1,7 @@
 import React from "react";
 import { shortenEthereumAddress } from "../../utils";
 
-const ActiveProposal = ({ width }) => {
+const ActiveProposal = ({ width }:any) => {
   return (
     <>
       <div className="wrapper">

@@ -462,6 +462,16 @@ const _abi = [
             type: "address",
           },
           {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "description",
+            type: "string",
+          },
+          {
             internalType: "uint256",
             name: "value",
             type: "uint256",
@@ -506,11 +516,11 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "getRevenueSplit",
+    name: "getRevenue",
     outputs: [
       {
         internalType: "uint256",
-        name: "split",
+        name: "total",
         type: "uint256",
       },
     ],
@@ -627,6 +637,16 @@ const _abi = [
         internalType: "address",
         name: "destination",
         type: "address",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "description",
+        type: "string",
       },
       {
         internalType: "uint256",
@@ -755,6 +775,16 @@ const _abi = [
         internalType: "address",
         name: "destination",
         type: "address",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "description",
+        type: "string",
       },
       {
         internalType: "uint256",

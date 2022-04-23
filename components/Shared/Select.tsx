@@ -1,6 +1,7 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useDetectOutsideClick } from "../../hooks/useDetectClickOutside";
 import { useGlobalContext } from "../../hooks/useGlobalContext";
+import { SelectProps } from "../../types";
 
 const Select = ({
   optionsList,
@@ -13,18 +14,18 @@ const Select = ({
   disabled,
   placeholder,
   customEmptyText,
-}: SelectProps) => {
+}: SelectProps):any => {
   const selectRef: MutableRefObject<null | any> = useRef(null);
   const [expanded, setExpanded] = useDetectOutsideClick(selectRef, false);
 
-  const [selectedOption, setSelectedOption] = useState<Option>(
+  const [selectedOption, setSelectedOption] = useState<any>(
     optionsList[selected ? selected : 0]
   );
   const [placeholderFlag, setPlaceholderFlag] = useState<boolean>(true);
 
   const { currentNetwork } = useGlobalContext();
 
-  const handleChange = (key) => {
+  const handleChange = (key:any) => {
     const option = optionsList[key]
     setExpanded(!expanded);
     setSelectedOption(option);

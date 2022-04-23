@@ -6,7 +6,7 @@ enum AccountsType {
   Proposers,
 }
 
-const Accounts = ({ type, data }) => {
+const Accounts = ({ type, data }: any) => {
   let description = "";
   if (type === "Voters") {
     description =
@@ -33,7 +33,7 @@ const Accounts = ({ type, data }) => {
         </div>
         <div className="list">
           <ul>
-            {data?.map((voter) => {
+            {data?.map((voter:any) => {
               return <li key={voter}>{voter}</li>;
             })}
           </ul>

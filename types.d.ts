@@ -1,15 +1,11 @@
+declare module "react-toggle";
 import { FunctionParam } from "./components/Proposal/ProposalActions";
 
 interface AppContext {
   createVenture: any;
-  createProposal: {
-    proposalDetails: {
-      title: '',
-      description: ''
-    },
-    proposalActions: ProposalAction[]
-  }
   createProposal: any;
+  createProposal: any;
+  isWalletConnected: boolean;
   triedConnecting: boolean;
   currentNetwork: Network;
   networkOptions: Network[];
@@ -32,8 +28,7 @@ interface UpdateAppContext {
 interface NetworkConfig {
   [protocol: string]: {
     network: Network;
-    tokenAddresses: { [name: string]: string };
-    EWTB?: { [name: string]: string };
+    factory_address: string;
   };
 }
 

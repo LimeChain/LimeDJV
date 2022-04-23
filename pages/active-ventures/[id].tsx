@@ -15,7 +15,7 @@ import Modal from "../../components/Shared/Modal";
 const ActiveVenture = () => {
   const history = useRouter();
   const { account } = useWeb3React();
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState<any>("");
   const ventureContract = useJointVentureContract(address);
   const [ventureInfo, setVentureInfo] = useState({});
   const [loading, setLoading] = useState(false);
@@ -75,7 +75,7 @@ const ActiveVenture = () => {
     }
   };
 
-  const { revenueSplit, name } = ventureInfo;
+  const { revenueSplit, name }:any = ventureInfo;
 
   return (
     <>

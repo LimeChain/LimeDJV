@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const VentureDetails = () => {
-  const { ventureDetails, setVentureDetails } = useGlobalContext();
+  const { ventureDetails, setVentureDetails }:any = useGlobalContext();
 
-  const updateDescription = (val) => {
+  const updateDescription = (val:any) => {
     const value = val.target.value;
     if (val.target.id == "name") {
       setVentureDetails({

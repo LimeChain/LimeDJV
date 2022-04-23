@@ -2,10 +2,10 @@ import { Web3ReactProvider } from "@web3-react/core";
 import React, { createContext, useState } from "react";
 import { NETWORK_CONFIG } from "../config/network";
 import { useWalletConnection } from "../hooks/useWalletConnection";
-import { AppContext, Network, ProposalAction, UpdateAppContext } from "../types";
+import { Network, ProposalAction } from "../types";
 import getLibrary from "../utils/network";
 
-const initialState: AppContext = {
+const initialState: any = {
   createVenture: {
     ventureDetails: {
       name: '',
@@ -35,21 +35,21 @@ const initialState: AppContext = {
   networkIndex: 0 as number,
 }
 
-export const GlobalContext = createContext<AppContext>(
-  initialState as AppContext
+export const GlobalContext = createContext<any>(
+  initialState as any
 );
 
-export const UpdateGlobalContext = createContext<UpdateAppContext>({
-  setVentureDetails: (_value) => {
+export const UpdateGlobalContext = createContext<any>({
+  setVentureDetails: (_value:any) => {
     return;
   },
-  setVoters: (_value) => {
+  setVoters: (_value:any) => {
     return;
   },
-  setProposers: (_value) => {
+  setProposers: (_value:any) => {
     return;
   },
-  setProposalDetails: (_value) => {
+  setProposalDetails: (_value:any) => {
     return;
   },
   setProposalActions: (_value: ProposalAction[]) => {

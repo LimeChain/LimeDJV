@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const Proposers = () => {
-  const { proposers, setProposers } = useGlobalContext();
+  const { proposers, setProposers }:any = useGlobalContext();
 
   const addProposerHandler = (e: any) => {
     e.preventDefault();
@@ -27,7 +27,7 @@ const Proposers = () => {
     setProposers(newProposers);
   };
 
-  const updateAddress = (val) => {
+  const updateAddress = (val:any) => {
     const value = val.target.value;
     console.log(val);
     let newProposers = [...proposers];
@@ -46,7 +46,7 @@ const Proposers = () => {
     <>
       <div className="wrapper">
         <form>
-          {proposers.map((proposer, index) => {
+          {proposers.map((proposer:any, index:any) => {
             return (
               <>
                 {index === 0 && (

@@ -5,10 +5,10 @@ import { shortenEthereumAddress } from "../utils";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const VentureCard = ({ address, onClick }) => {
+const VentureCard = ({ address, onClick }:any) => {
   const { account } = useWeb3React();
   const ventureContract = useJointVentureContract(address);
-  const [ventureInfo, setVentureInfo] = useState({});
+  const [ventureInfo, setVentureInfo] = useState<any>({});
 
   useEffect(() => {
     if(!account) {

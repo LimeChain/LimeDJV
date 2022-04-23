@@ -2,7 +2,7 @@ import React from "react";
 import useEagerConnect from "../../hooks/useEagerConnect";
 import Account from "../Account";
 
-const Title = ({ text }) => {
+const Title = ({ text }:any) => {
   const triedToEagerConnect = useEagerConnect();
 
   return (

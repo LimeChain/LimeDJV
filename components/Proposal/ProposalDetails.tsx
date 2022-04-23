@@ -1,9 +1,9 @@
 import { useGlobalContext } from "../../hooks/useGlobalContext";
 
 const ProposalDetails = () => {
-  const { proposalDetails, setProposalDetails } = useGlobalContext();
+  const { proposalDetails, setProposalDetails }:any = useGlobalContext();
 
-  const updateProposalDetails = (e) => {
+  const updateProposalDetails = (e:any) => {
     const value = e.target.value;
     const key = e.target.id;
 

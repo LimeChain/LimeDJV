@@ -23,11 +23,11 @@ const CreateProposal = () => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const [ventureAddress, setVentureAddress] = useState<string>("");
+  const [ventureAddress, setVentureAddress] = useState<any>("");
   const { account } = useWeb3React();
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState<any>("");
   const ventureContract = useJointVentureContract(address);
-  const [ventureInfo, setVentureInfo] = useState({});
+  const [ventureInfo, setVentureInfo] = useState<any>({});
   const [isModalShown, setIsModalShown] = useState(false);
   const { name } = ventureInfo;
   const jointVentureContract = useJointVentureContract(address) as JointVenture;
@@ -176,8 +176,8 @@ const CreateProposal = () => {
                 nextClickHandler={nextClickHandler}
               ></StepBar>
               <div className="steps-wrapper">
-                {progressSteps.map((step) => {
-                  return <div hidden={!step.isActive}>{step.children}</div>;
+                {progressSteps.map((step, index) => {
+                  return <div key={index} hidden={!step.isActive}>{step.children}</div>;
                 })}
               </div>
             </div>

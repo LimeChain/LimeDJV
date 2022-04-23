@@ -1,17 +1,17 @@
 export type StepBarProps = {
-  // steps: {
-  //   index: number;
-  //   title: string;
-  //   isActive: boolean;
-  //   children?: any;
-  // }[];
+  steps: {
+    index: number;
+    title: string;
+    isActive: boolean;
+    children?: any;
+  }[];
 };
 
 const StepBar = ({ steps }: StepBarProps) => {
   return (
     <>
       <div className="stepper-wrapper">
-        {steps.map((step) => {
+        {steps.map((step:any) => {
           return (
             <>
               <div

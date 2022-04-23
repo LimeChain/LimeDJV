@@ -7,7 +7,7 @@ const Button = ({
   size = "default",
   className,
   color = "default",
-}) => {
+}:any) => {
   let buttonSize = "default";
   if (buttonSize == "sm") {
     buttonSize == "sm";
