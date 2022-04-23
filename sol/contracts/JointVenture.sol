@@ -241,7 +241,7 @@ contract JointVenture is VoterManager, ProposerManager {
         bytes memory data
     ) internal returns (bool) {
         bool result;
-        //todo rn msg.value could not be sent via external_call should be revised
+
         assembly {
             let x := mload(0x40) // "Allocate" memory for output (0x40 is where "free memory" pointer is stored by convention)
             let d := add(data, 32) // First 32 bytes are the padded length of data, so exclude that
