@@ -1,3 +1,9 @@
+import type {
+  ExternalProvider,
+  JsonRpcFetchFunc,
+} from "@ethersproject/providers";
+import { Web3Provider } from "@ethersproject/providers";
+
 export const getNetworkIndex = (
   chainId: number,
   options: Network[]
@@ -11,3 +17,9 @@ export const getNetworkIndex = (
   }
   return networkIndex;
 };
+
+export default function getLibrary(
+  provider: ExternalProvider | JsonRpcFetchFunc
+) {
+  return new Web3Provider(provider);
+}
