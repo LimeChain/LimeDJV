@@ -65,7 +65,6 @@ const Select = ({
       
         <style jsx>{`
         select {
-          font: 400 12px/1.3 sans-serif;
           -webkit-appearance: none;
           appearance: none;
           color: white;
@@ -74,7 +73,7 @@ const Select = ({
           border: 1px solid #04E0B8;
           line-height: 1;
           outline: 0;
-          padding: 0.65em 2.5em 0.55em 0.75em;
+          padding: 10px 10px 10px 10px;
           border-radius: 16px;
           background-color: #04E0B8;
           background-image: linear-gradient(#04E0B8, #04E0B8), linear-gradient(-135deg, transparent 50%, #04E0B8 50%), linear-gradient(-225deg, transparent 50%, #04E0B8 50%), linear-gradient(#04E0B8 42%, white 42%);
