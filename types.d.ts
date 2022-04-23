@@ -78,3 +78,29 @@ interface NetworkConfig {
   interface Option {
     [key: string]: any;
   }
+  // Metamask types
+// more info: https://docs.metamask.io/guide/rpc-api.html#parameters-4
+interface MetamaskChainParams {
+  chainId: string;
+  chainName: string;
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  chainId: string;
+  rpcUrls?: string[];
+  blockExplorerUrls?: string[];
+}
+
+// more info: https://docs.metamask.io/guide/rpc-api.html#parameters-6
+interface MetamaskAssetParamsOptions {
+  address: string;
+  symbol: string;
+  decimals: number;
+  image?: string;
+}
+
+interface MetamaskAssetParamsType {
+  type: "ERC20";
+}
