@@ -1,14 +1,81 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import ActiveProposal from "../../components/ActiveProposal";
 import Button from "../../components/Shared/Button";
 import SideMenu from "../../components/Shared/SideMenu";
 import Title from "../../components/Shared/Title";
 import Wrapper from "../../components/Shared/Wrapper";
+import Accounts from "../../components/Accounts";
 import { useRouter } from "next/router";
+import { useWeb3React } from "@web3-react/core";
+import useJointVentureContract from "../../hooks/useJointVentureContract";
 import Loader from "../../components/Shared/Loader";
+import { utils } from "ethers";
+import Modal from "../../components/Shared/Modal";
 
 const ActiveVenture = () => {
   const history = useRouter();
+  const { account } = useWeb3React();
   const [address, setAddress] = useState("");
+  const ventureContract = useJointVentureContract(address);
+  const [ventureInfo, setVentureInfo] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [isModalShown, setIsModalShown] = useState(false);
+
+  useEffect(() => {
+    setAddress(history.query.id);
+  }, [history.query]);
+
+  useEffect(() => {
+    if (address && ventureContract) {
+      setLoading(true);
+      const getVentureInfo = async () => {
+        const name = await ventureContract.name();
+        const description = await ventureContract.description();
+        const proposalCount = await ventureContract.proposalCount();
+        const proposals = await ventureContract.getProposals(
+          0,
+          proposalCount,
+          true,
+          true
+        );
+        const voters = await ventureContract.getVoters();
+        const proposers = await ventureContract.getProposers();
+        const isVoter = await ventureContract.isVoter(account);
+        const isProposer = await ventureContract.isProposer(account);
+        const revenueSplit = await ventureContract.getRevenueSplit(
+          "0x0000000000000000000000000000000000000000"
+        );
+        setVentureInfo({
+          name,
+          description,
+          proposalCount: proposalCount.toString(),
+          proposals,
+          isVoter,
+          isProposer,
+          revenueSplit: revenueSplit.toString(),
+          voters,
+          proposers,
+        });
+      };
+
+      getVentureInfo();
+    }
+    setLoading(false);
+  }, [ventureContract]);
+
+  const splitRevenue = async () => {
+    try {
+      const tx = await ventureContract.splitRevenue(
+        "0x0000000000000000000000000000000000000000"
+      );
+      if (tx.status === 1) {
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const { revenueSplit, name } = ventureInfo;
 
   return (
     <>
@@ -18,13 +85,15 @@ const ActiveVenture = () => {
           "Splitting the revenue will withdraw the funds from the contract and distribute them to the Voters according to their Power."
         }
         title="Do you want to continue"
-        show={() => {}}
-        handleClose={() => {}}
-        onSubmit={() => {}}
+        show={isModalShown}
+        handleClose={() => {
+          setIsModalShown(false);
+        }}
+        onSubmit={splitRevenue}
       />
       <Wrapper>
         <div className="create">
-          <Title text={`My ventures > title of venture`} />
+          <Title text={name && `My ventures > ${ventureInfo.name}`} />
           <Button
             size="sm"
             label="Create proposal"
@@ -51,6 +120,7 @@ const ActiveVenture = () => {
                   </div>
                   <div className="description">
                     <div className="label">Description</div>
+                    <div className="value">{ventureInfo?.description}</div>
                   </div>
                 </div>
                 <div className="split-revenue">
@@ -58,21 +128,35 @@ const ActiveVenture = () => {
                     <img src="" alt="icon" />
                     <div className="split-revenue--value">
                       <div>Revenue</div>
-                      <div className="amount"></div>
+                      <div className="amount">
+                        {revenueSplit && utils.formatEther(revenueSplit)}
+                      </div>
                     </div>
                   </div>
 
-                  <div>{/* TODO: add button */}</div>
+                  <div>
+                    <Button
+                      onClick={() => setIsModalShown(true)}
+                      label="Split"
+                      size="sm"
+                    />
+                  </div>
                 </div>
               </div>
               <div className="right">
                 <div className="title">Active proposals</div>
-                <div>{/* TODO: show active proposals */}</div>
+                <div>
+                  <ActiveProposal />
+                  <ActiveProposal />
+                </div>
                 <p className="all" onClick={() => history.push("/proposals")}>
                   See all
                 </p>
               </div>
-              <div className="accounts-wrapper">{/* TODO: Accounts */}</div>
+              <div className="accounts-wrapper">
+                <Accounts type="Voters" data={ventureInfo.voters} />
+                <Accounts type="Proposers" data={ventureInfo.proposers} />
+              </div>
             </>
           )}
         </div>

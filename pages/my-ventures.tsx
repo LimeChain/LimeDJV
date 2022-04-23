@@ -1,21 +1,43 @@
 import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/dist/client/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../components/Shared/Button";
+import Loader from "../components/Shared/Loader";
 import Modal from "../components/Shared/Modal";
 import SideMenu from "../components/Shared/SideMenu";
 import Title from "../components/Shared/Title";
 import Wrapper from "../components/Shared/Wrapper";
+import StepBar, { StepBarProps } from "../components/StepBar";
+import VentureCard from "../components/VentureCard";
+import { FACTORY_ADDRESS } from "../constants";
+import useFactoryContract from "../hooks/useFactoryContract";
+import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const MyVentures = () => {
   const [isModalShow, setIsModalShown] = useState(false);
-  const { account } = useWeb3React();
+  const { account, library } = useWeb3React();
   const router = useRouter();
+  const factoryContract = useFactoryContract(FACTORY_ADDRESS);
+  const [myVentures, setMyVentures] = useState([]);
+  const { isWalletConnected } = useGlobalContext();
 
   const onSubmit = () => {
     setIsModalShown(true);
     console.log("SUBMITTED");
   };
+
+  useEffect(() => {
+    const loadVentures = async () => {
+      setMyVentures([])
+
+      if (!account) return;
+      if (!isWalletConnected) return;
+
+      const instantiations = await factoryContract.getInstantiations(account);
+      setMyVentures(instantiations);
+    };
+    loadVentures();
+  }, [account, library, isWalletConnected]);
 
   return (
     <>
@@ -41,7 +63,14 @@ const MyVentures = () => {
           }}
         ></Button>
         <div className="grid">
-          {/* TODO: show ventures */}
+          {myVentures.map((venture) => {
+            return (
+              <VentureCard
+                onClick={() => router.push(`/active-ventures/${venture}`)}
+                address={venture}
+              />
+            );
+          })}
         </div>
         <style jsx>{`
           .grid {

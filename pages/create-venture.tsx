@@ -1,14 +1,22 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import Proposers from "../components/Proposers";
+import Review from "../components/Review";
 import Button from "../components/Shared/Button";
 import Loader from "../components/Shared/Loader";
 import SideMenu from "../components/Shared/SideMenu";
 import Title from "../components/Shared/Title";
 import Wrapper from "../components/Shared/Wrapper";
 import StepBar from "../components/StepBar";
+import VentureDetails from "../components/VentureDetails";
+import Voters from "../components/Voters";
+import { FACTORY_ADDRESS } from "../constants";
+import useFactoryContract from "../hooks/useFactoryContract";
+import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const CreateVenture = () => {
-
+  const { ventureDetails, voters, proposers } = useGlobalContext();
+  const factoryContract = useFactoryContract(FACTORY_ADDRESS);
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -18,25 +26,25 @@ const CreateVenture = () => {
       index: 0,
       title: "Venture details",
       isActive: true,
-      children: "",
+      children: <VentureDetails></VentureDetails>,
     },
     {
       index: 1,
       title: "Voters",
       isActive: false,
-      children: "",
+      children: <Voters></Voters>,
     },
     {
       index: 2,
       title: "Proposers",
       isActive: false,
-      children: "",
+      children: <Proposers></Proposers>,
     },
     {
       index: 3,
       title: "Review",
       isActive: false,
-      children: "",
+      children: <Review></Review>,
     },
   ]);
 
@@ -71,7 +79,27 @@ const CreateVenture = () => {
   };
 
   const createClickHandler = async () => {
-    
+    setLoading(true);
+    const proposersArray = proposers.map((proposer) => {
+      return proposer.address;
+    });
+    try {
+      const tx = await factoryContract.create(
+        ventureDetails.name,
+        ventureDetails.description,
+        [voters.address1, voters.address2],
+        proposersArray,
+        2,
+        { gasLimit: 12000000 }
+      );
+      const txReceipt = await tx.wait();
+      if (txReceipt.status === 1) {
+        setLoading(false);
+        setSuccess(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

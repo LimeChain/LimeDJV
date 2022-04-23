@@ -3,21 +3,21 @@ import { useGlobalContext } from "../../hooks/useGlobalContext";
 const ProposalDetails = () => {
   const { proposalDetails, setProposalDetails } = useGlobalContext();
 
-  const updateProposalDetails = (val) => {
-    const value = val.target.value;
-    if (val.target.id == "title") {
-      setProposalDetails({
-        title: value,
-        description: proposalDetails.description,
-      });
-    }
+  const updateProposalDetails = (e) => {
+    const value = e.target.value;
+    const key = e.target.id;
 
-    if (val.target.id == "description") {
-      setProposalDetails({
-        title: proposalDetails.name,
-        description: value,
-      });
-    }
+    const proposalDetailsClone = { ...proposalDetails.proposalDetails };
+
+    const state = {
+      ...proposalDetailsClone,
+      [key]: value,
+    };
+
+    setProposalDetails({
+      ...proposalDetails,
+      proposalDetails: state,
+    });
   };
 
   return (
@@ -50,18 +50,18 @@ const ProposalDetails = () => {
       </div>
 
       <style jsx>{`
-      .wrapper {
-        text-align: center;
-      }
-      form {
-        display: inline-block;
-        margin-left: auto;
-        margin-right: auto;
-        text-align: left;
-      }
-    `}</style>
+        .wrapper {
+          text-align: center;
+        }
+        form {
+          display: inline-block;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: left;
+        }
+      `}</style>
     </>
   );
-}
+};
 
 export default ProposalDetails;

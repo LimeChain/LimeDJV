@@ -6,7 +6,7 @@ enum AccountsType {
   Proposers,
 }
 
-const Accounts = ({ type }) => {
+const Accounts = ({ type, data }) => {
   let description = "";
   if (type === "Voters") {
     description =
@@ -14,6 +14,8 @@ const Accounts = ({ type }) => {
   } else if (type === "Proposers") {
     description = "Proposers have the right to create proposals.";
   }
+
+  if (!data?.length) return null;
   return (
     <>
       <div className="wrapper">
@@ -23,7 +25,7 @@ const Accounts = ({ type }) => {
             <div className="description">{description}</div>
           </div>
           <div className="right">
-            <Button label="Manage" size="sm" color="transparent" />
+            {/* <Button label="Manage" size="sm" color="transparent" /> */}
           </div>
         </div>
         <div className="top">
@@ -31,9 +33,9 @@ const Accounts = ({ type }) => {
         </div>
         <div className="list">
           <ul>
-            <li>0xA8D412C0B165F9C941088C68CBfeCc0DE47716CB</li>
-            <li>0xA8D412C0B165F9C941088C68CBfeCc0DE47716CB</li>
-            <li>0xA8D412C0B165F9C941088C68CBfeCc0DE47716CB</li>
+            {data?.map((voter) => {
+              return <li key={voter}>{voter}</li>;
+            })}
           </ul>
         </div>
       </div>
