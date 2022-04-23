@@ -237,7 +237,7 @@ describe("JointVenture", function () {
     it("should add new voter", async () => {
       const initialVoters = await jv.getVoters()
       expect(initialVoters.length).to.equal(2);
-
+      
       const encodedData = (await jv.connect(voter1).populateTransaction.addVoter(nonVoter.address)).data
       const tx = await jv.connect(proposer1).submitProposal(jv.address, 0, encodedData)
       const receipt = await tx.wait();

@@ -3,9 +3,10 @@ pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "./VoterManager.sol";
 
 /// @title JointVenture contract represented as Multisig wallet - Allows multiple parties to agree on proposals before execution.
-contract JointVenture {
+contract JointVenture is VoterManager {
     using Address for address payable;
     /*
      *  Events
@@ -16,17 +17,10 @@ contract JointVenture {
     event Execution(uint256 indexed proposalId);
     event ExecutionFailure(uint256 indexed proposalId);
     event Deposit(address indexed sender, uint256 value);
-    event VoterAddition(address indexed voter);
-    event VoterRemoval(address indexed voter);
+
     event ProposerAddition(address indexed voter);
     event ProposerRemoval(address indexed voter);
-    event RequirementChange(uint256 required);
     event RevenueSplit(uint256 revenue, address[] voters);
-
-    /*
-     *  Constants
-     */
-    uint256 public constant MAX_OWNER_COUNT = 50;
 
     /*
      *  Storage
@@ -36,11 +30,8 @@ contract JointVenture {
 
     mapping(uint256 => Proposal) public proposals;
     mapping(uint256 => mapping(address => bool)) public confirmations;
-    mapping(address => bool) public isVoter;
     mapping(address => bool) public isProposer;
-    address[] public voters;
     address[] public proposers;
-    uint256 public required;
     uint256 public proposalCount;
 
     struct Proposal {
@@ -58,18 +49,8 @@ contract JointVenture {
         _;
     }
 
-    modifier voterDoesNotExist(address voter) {
-        require(!isVoter[voter], "JV: Voter Exists");
-        _;
-    }
-
     modifier proposerDoesNotExist(address proposer) {
         require(!isProposer[proposer], "JV: Proposer Exists");
-        _;
-    }
-
-    modifier voterExists(address voter) {
-        require(isVoter[voter], "JV: Only Voter");
         _;
     }
 
@@ -114,21 +95,10 @@ contract JointVenture {
         _;
     }
 
-    modifier validRequirement(uint256 voterCount, uint256 _required) {
-        require(
-            voterCount <= MAX_OWNER_COUNT &&
-                _required <= voterCount &&
-                _required != 0 &&
-                voterCount != 0
-        );
-        _;
-    }
-
     /// @dev Fallback function allows to deposit ether.
     receive() external payable {
         if (msg.value > 0) emit Deposit(msg.sender, msg.value);
     }
-
 
     /*
      * Public functions
@@ -167,31 +137,16 @@ contract JointVenture {
     function addVoter(address voter)
         public
         onlyJointVenture
-        voterDoesNotExist(voter)
         notNull(voter)
         validRequirement(voters.length + 1, required)
     {
-        isVoter[voter] = true;
-        voters.push(voter);
-        emit VoterAddition(voter);
+        _addVoter(voter);
     }
 
     /// @dev Allows to remove an voter. Proposal has to be sent by wallet.
     /// @param voter Address of voter.
-    function removeVoter(address voter)
-        public
-        onlyJointVenture
-        voterExists(voter)
-    {
-        isVoter[voter] = false;
-        for (uint256 i = 0; i < voters.length - 1; i++)
-            if (voters[i] == voter) {
-                voters[i] = voters[voters.length - 1];
-                break;
-            }
-        voters.pop();
-        if (required > voters.length) changeRequirement(voters.length);
-        emit VoterRemoval(voter);
+    function removeVoter(address voter) public onlyJointVenture {
+        _removeVoter(voter);
     }
 
     /// @dev Allows to add a new proposer. Proposal has to be sent by wallet.
@@ -230,29 +185,14 @@ contract JointVenture {
     function replaceVoter(address voter, address newVoter)
         public
         onlyJointVenture
-        voterExists(voter)
-        voterDoesNotExist(newVoter)
     {
-        for (uint256 i = 0; i < voters.length; i++)
-            if (voters[i] == voter) {
-                voters[i] = newVoter;
-                break;
-            }
-        isVoter[voter] = false;
-        isVoter[newVoter] = true;
-        emit VoterRemoval(voter);
-        emit VoterAddition(newVoter);
+        _replaceVoter(voter, newVoter);
     }
 
     /// @dev Allows to change the number of required confirmations. Proposal has to be sent by wallet.
     /// @param _required Number of required confirmations.
-    function changeRequirement(uint256 _required)
-        public
-        onlyJointVenture
-        validRequirement(voters.length, _required)
-    {
-        required = _required;
-        emit RequirementChange(_required);
+    function changeRequirement(uint256 _required) public onlyJointVenture {
+        _changeRequirement(_required);
     }
 
     /// @dev Allows an voter to submit and confirm a proposal.
@@ -270,9 +210,7 @@ contract JointVenture {
 
     /// @dev Allows an voter to confirm a proposal.
     /// @param proposalId Proposal ID.
-    function confirmProposal(
-        uint256 proposalId
-    )
+    function confirmProposal(uint256 proposalId)
         public
         voterExists(msg.sender)
         proposalExists(proposalId)
