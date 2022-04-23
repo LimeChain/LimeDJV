@@ -11,7 +11,7 @@ import SideMenu from "../../components/Shared/SideMenu";
 import Title from "../../components/Shared/Title";
 import Wrapper from "../../components/Shared/Wrapper";
 import StepBar from "../../components/StepBar";
-import MOCK_TOKEN_ABI from '../../contracts/MockToken.json';
+import MOCK_TOKEN_ABI from "../../contracts/MockToken.json";
 import { JointVenture } from "../../contracts/types";
 import { useGlobalContext } from "../../hooks/useGlobalContext";
 import useJointVentureContract from "../../hooks/useJointVentureContract";
@@ -23,15 +23,16 @@ const CreateProposal = () => {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const [ventureAddress, setVentureAddress] = useState<any>("");
+  const [ventureAddress, setVentureAddress] = useState<string>("");
   const { account } = useWeb3React();
-  const [address, setAddress] = useState<any>("");
+  const [address, setAddress] = useState("");
   const ventureContract = useJointVentureContract(address);
-  const [ventureInfo, setVentureInfo] = useState<any>({});
+  const [ventureInfo, setVentureInfo] = useState({});
   const [isModalShown, setIsModalShown] = useState(false);
   const { name } = ventureInfo;
   const jointVentureContract = useJointVentureContract(address) as JointVenture;
-  const { proposalActions } = useGlobalContext();
+  const { proposalActions, proposalDetails } = useGlobalContext();
+
   const [progressSteps, setProgressSteps] = useState([
     {
       index: 0,
@@ -97,12 +98,22 @@ const CreateProposal = () => {
     actions.forEach(async (action) => {
       try {
         const contract = new Contract(action.targetAddress, MOCK_TOKEN_ABI);
-        const fragment = contract.interface.getFunction(action.selectedFunction);
-        console.log(`create: ${JSON.stringify(action.functionParams)}`)
-        const encodedData = contract.interface
-          .encodeFunctionData(fragment, action.functionParams.map(param => param.value));
+        const fragment = contract.interface.getFunction(
+          action.selectedFunction
+        );
+        console.log(`create: ${JSON.stringify(action.functionParams)}`);
+        const encodedData = contract.interface.encodeFunctionData(
+          fragment,
+          action.functionParams.map((param) => param.value)
+        );
 
-        const tnx = await jointVentureContract.submitProposal(action.targetAddress, 0, encodedData);
+        const tnx = await jointVentureContract.submitProposal(
+          action.targetAddress,
+          proposalDetails.proposalDetails.title,
+          proposalDetails.proposalDetails.description,
+          0,
+          encodedData
+        );
         const tnxReceipt = await tnx.wait();
         setSuccess(tnxReceipt.status === 1);
       } catch (e) {
@@ -112,7 +123,7 @@ const CreateProposal = () => {
         setLoading(false);
       }
     });
-  }
+  };
 
   const nextClickHandler = () => {
     const activeIndex = progressSteps.findIndex((step) => step.isActive);
@@ -168,7 +179,7 @@ const CreateProposal = () => {
             </div>
           </div>
         ) : (
-          < div className="inner-wrapper">
+          <div className="inner-wrapper">
             <div className="up">
               <StepBar
                 steps={progressSteps}
@@ -188,7 +199,7 @@ const CreateProposal = () => {
                 label="Prev"
               ></Button>
               {progressSteps[progressSteps.length - 1].index ==
-                progressSteps.findIndex((step) => step.isActive) ? (
+              progressSteps.findIndex((step) => step.isActive) ? (
                 <Button
                   className="margin-right"
                   onClick={createClickHandler}
@@ -205,7 +216,7 @@ const CreateProposal = () => {
           </div>
         )}
 
-        < style jsx>{`
+        <style jsx>{`
           .grid {
             display: grid;
             grid-template-columns: auto auto auto auto;
@@ -251,7 +262,7 @@ const CreateProposal = () => {
         `}</style>
       </Wrapper>
     </>
-  )
+  );
 };
 
 export default CreateProposal;
