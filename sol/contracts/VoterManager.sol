@@ -96,4 +96,14 @@ contract VoterManager {
         required = _required;
         emit RequirementChange(_required);
     }
+
+    /*
+     * Web3 call functions
+     */
+
+    /// @dev Returns list of voters.
+    /// @return List of voter addresses.
+    function getVoters() public view returns (address[] memory) {
+        return voters;
+    }
 }
