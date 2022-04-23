@@ -1,0 +1,25 @@
+node_modules
+
+# Buidler files
+.DS_Store
+cache
+artifacts
+abi
+/typechain
+
+# Coverage
+coverage
+coverage.json
+
+# Env settings
+.env
+
+
+#Local settings
+local/
+
+# IDE settings
+typechain/
+
+# Deploy settings
+contracts.json
