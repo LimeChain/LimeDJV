@@ -2,6 +2,7 @@ import { Web3ReactProvider } from "@web3-react/core";
 import React, { createContext, useState } from "react";
 import { NETWORK_CONFIG } from "../config/network";
 import { useWalletConnection } from "../hooks/useWalletConnection";
+import { AppContext, Network, ProposalAction, UpdateAppContext } from "../types";
 import getLibrary from "../utils/network";
 
 const initialState: AppContext = {
@@ -25,7 +26,7 @@ const initialState: AppContext = {
       title: '',
       description: ''
     },
-    proposalActions: []
+    proposalActions: [] as ProposalAction[]
   },
   isWalletConnected: false as boolean,
   triedConnecting: false as boolean,

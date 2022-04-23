@@ -1,7 +1,10 @@
 import { useGlobalContext } from "../../hooks/useGlobalContext";
+import { ProposalAction } from "../../types";
+import { FunctionParam } from "./ProposalActions";
 
 const ProposalReview = () => {
   const { proposalDetails, proposalActions } = useGlobalContext();
+  console.log(proposalDetails);
 
   const details = proposalDetails.proposalDetails;
 
@@ -29,6 +32,18 @@ const ProposalReview = () => {
                       <div className="label">Target</div>
                       <p id="targetAddress">{action.targetAddress}</p>
                     </div>
+                    {
+                      action.functionParams.map((param: FunctionParam) => {
+                        return (
+                          <>
+                            <div style={{ display: "flex" }}>
+                              <div className="label">{param.name}</div>
+                              <p id="valueAttribute">{param.value}</p>
+                            </div>
+                          </>
+                        );
+                      })
+                    }
                     <div style={{ display: "flex" }}>
                       <div className="label">Value attribute</div>
                       <p id="valueAttribute">{`${action.numberOfZeroes} zeroes`}</p>

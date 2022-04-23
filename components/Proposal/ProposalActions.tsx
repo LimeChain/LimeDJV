@@ -1,33 +1,69 @@
 import { Contract } from "ethers";
 import { useState } from "react";
 import Toggle from "react-toggle";
-import MOCK_TOKEN_ABI from '../../contracts/MockToken.json';
+import MOCK_TOKEN_ABI from "../../contracts/MockToken.json";
 import { useGlobalContext } from "../../hooks/useGlobalContext";
+import { ProposalAction } from "../../types";
+
+export interface FunctionParam {
+  name: string;
+  value: any;
+}
 
 const ProposalActions = () => {
   const { proposalActions, setProposalActions } = useGlobalContext();
   const [contractFunctions, setContractFunctions] = useState<string[]>([]);
+  const [functionInputs, setFunctionInputs] = useState([]);
+  const [parameterValues, setParameterValues] = useState<FunctionParam[]>([]);
 
-  const updateProposalAction = (val) => {
-    const value = val.target.value;
-    const [property, index] = val.target.id.split("-");
-    const newActions = [...proposalActions];
+  const updateFunctionParam = (actionIndex, paramName, event) => {
+    event.preventDefault();
+
+    const value = event.target.value;
+    const index = parameterValues.findIndex(param => param.name == paramName);
+
+    const newParamValues = [...parameterValues];
+
+    if (index > -1) {
+      newParamValues[index].value = value;
+    } else {
+      newParamValues.push({
+        name: paramName,
+        value
+      })
+    }
+
+    const newActions = [...proposalActions] as ProposalAction[];
+    newActions[actionIndex].functionParams = newParamValues;
+
+    setParameterValues(newParamValues);
+    setProposalActions(newActions);
+  }
+
+  const updateProposalAction = (event) => {
+    event.preventDefault();
+
+    const value = event.target.value;
+    const [property, index] = event.target.id.split("-");
+    const newActions = [...proposalActions] as ProposalAction[];
+
+    console.log(proposalActions);
 
     const itemToUpdate = newActions[index];
 
-    if (val.target.type === "checkbox") {
-      itemToUpdate[property] = val.target.checked;
+    if (event.target.type === "checkbox") {
+      itemToUpdate[property] = event.target.checked;
     } else {
       itemToUpdate[property] = value;
     }
 
+    itemToUpdate.functionParams = functionInputs;
     setProposalActions(newActions);
   };
 
   const addProposalHandler = (e) => {
     e.preventDefault();
 
-    const newIndex = proposalActions.length + 1;
     let newProposalActions = [...proposalActions] as ProposalAction[];
 
     newProposalActions.push({
@@ -37,6 +73,7 @@ const ProposalActions = () => {
       numberOfZeroes: 0,
       shouldAddFunctionCall: false,
       selectedFunction: "",
+      functionParams: []
     });
 
     setProposalActions(newProposalActions);
@@ -44,23 +81,30 @@ const ProposalActions = () => {
 
   const loadContractFunctions = (address: string) => {
     const contract = new Contract(address, MOCK_TOKEN_ABI);
-    const functonFragments = contract.interface.functions;
+    const functionFragments = contract.interface.functions;
 
     setContractFunctions(
       Object
-        .keys(contract.interface.functions)
-        .map(key => {
-          const fragment = functonFragments[key];
-          return fragment.name;
-        })
-    );
+        .keys(functionFragments)
+        .map(key => functionFragments[key].name));
+  }
+
+  const loadFunctionInputs = (address, functionName: string) => {
+    const contract = new Contract(address, MOCK_TOKEN_ABI);
+    const functionFragment = contract.interface.getFunction(functionName);
+    const inputs = functionFragment.inputs.map(input => {
+      return `${input.type} ${input.name}`;
+    });
+
+    setFunctionInputs(inputs);
+    setParameterValues(inputs.map(input => { return { name: input, value: '' } }));
   }
 
   return (
     <>
       <div className="wrapper">
         <form>
-          {proposalActions.map((action: ProposalAction, index) => {
+          {proposalActions.map((action: ProposalAction, actionIndex) => {
             return (
               <>
                 <label
@@ -71,7 +115,7 @@ const ProposalActions = () => {
                     textDecorationLine: "underline",
                   }}
                 >
-                  {`Action ${index + 1}`}
+                  {`Action ${actionIndex + 1}`}
                 </label>
                 <br></br>
                 <div>
@@ -86,7 +130,7 @@ const ProposalActions = () => {
                     }}
                     className="form-input"
                     type="text"
-                    id={`targetAddress-${index}`}
+                    id={`targetAddress-${actionIndex}`}
                     name="targetAddress"
                   ></input>
                 </div>
@@ -94,71 +138,65 @@ const ProposalActions = () => {
                 <br></br>
 
                 <label className="form-label inner-wrapper">
-                  <span> Is this a proxy address?</span>
-                  <Toggle
-                    defaultChecked={false}
-                    onChange={(val) => updateProposalAction(val)}
-                    icons={false}
-                    id={`isProxyAddress-${index}`}
-                  />
-                </label>
-                <br></br>
-                <label className="form-label inner-wrapper">
-                  <span> Add a value attribute?</span>
-                  <Toggle
-                    defaultChecked={false}
-                    onChange={(val) => updateProposalAction(val)}
-                    icons={false}
-                    id={`shouldAddValueAttribute-${index}`}
-                  />
-                </label>
-                <br></br>
-                <input
-                  hidden={!action.shouldAddValueAttribute}
-                  onChange={(val) => updateProposalAction(val)}
-                  className="form-input"
-                  type="number"
-                  id={`numberOfZeroes-${index}`}
-                  name="numberOfZeroes"
-                  placeholder="Enter number of zeroes"
-                ></input>
-                <br></br>
-                <label className="form-label inner-wrapper">
                   <span> Add a function call?</span>
                   <Toggle
                     defaultChecked={false}
-                    onChange={(val) => updateProposalAction(val)}
+                    onChange={(val) => {
+                      updateProposalAction(val);
+                    }}
                     icons={false}
-                    id={`shouldAddFunctionCall-${index}`}
+                    id={`shouldAddFunctionCall-${actionIndex}`}
                   />
                 </label>
                 <select
                   hidden={!action.shouldAddFunctionCall}
-                  onChange={(val) => updateProposalAction(val)}
+                  onChange={(val) => {
+                    setFunctionInputs([]);
+                    setParameterValues([]);
+                    updateProposalAction(val);
+                    loadFunctionInputs(action.targetAddress, val.target.value);
+                  }}
                   className="form-input"
-                  id={`selectedFunction-${index}`}
+                  id={`selectedFunction-${actionIndex}`}
                   name="selectedFunction"
                 >
-                  {
-                    contractFunctions
-                      .map((functionName) => {
-                        return (
-                          <>
-                            <option value={functionName}>{functionName}</option>
-                          </>
-                        )
-                      })
-                  }
+                  {contractFunctions.map((functionName) => {
+                    return (
+                      <>
+                        <option value={functionName}>{functionName}</option>
+                      </>
+                    );
+                  })}
                 </select>
                 <br></br>
+                {
+                  functionInputs.map(input => {
+                    return (
+                      <>
+                        <input
+                          hidden={!action.shouldAddFunctionCall}
+                          onInput={(e) => updateFunctionParam(actionIndex, input, e)}
+                          className="form-input"
+                          type="text"
+                          id={input}
+                          name={input}
+                          placeholder={input}
+                        ></input>
+                        <br></br>
+                      </>
+                    )
+                  })
+                }
               </>
             );
           })}
           <br></br>
-          <div className="add-action">
-            <img src="/svgs/plus-icon.svg" onClick={addProposalHandler} />
-            <p>Add new action</p>
-          </div>
+          {!proposalActions.length && (
+            <div className="add-action">
+              <img src="/svgs/plus-icon.svg" onClick={addProposalHandler} />
+              <p>Add new action</p>
+            </div>
+          )}
         </form>
       </div>
       <style jsx>{`

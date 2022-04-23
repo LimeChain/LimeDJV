@@ -15,6 +15,7 @@ import MOCK_TOKEN_ABI from '../../contracts/MockToken.json';
 import { JointVenture } from "../../contracts/types";
 import { useGlobalContext } from "../../hooks/useGlobalContext";
 import useJointVentureContract from "../../hooks/useJointVentureContract";
+import { ProposalAction } from "../../types";
 
 const CreateProposal = () => {
   const router = useRouter();
@@ -97,7 +98,9 @@ const CreateProposal = () => {
       try {
         const contract = new Contract(action.targetAddress, MOCK_TOKEN_ABI);
         const fragment = contract.interface.getFunction(action.selectedFunction);
-        const encodedData = contract.interface.encodeFunctionData(fragment);
+        console.log(`create: ${JSON.stringify(action.functionParams)}`)
+        const encodedData = contract.interface
+          .encodeFunctionData(fragment, action.functionParams.map(param => param.value));
 
         const tnx = await jointVentureContract.submitProposal(action.targetAddress, 0, encodedData);
         const tnxReceipt = await tnx.wait();
