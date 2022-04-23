@@ -272,22 +272,22 @@ contract JointVenture is VoterManager, ProposerManager {
     }
 
     function splitRevenue(address token) external payable onlyJointVenture {
-        uint256 revenue = getRevenueSplit(token);
+        uint256 fraction = getRevenue(token) / voters.length;
 
-        require(revenue > 0, "JV: Nothing to split");
+        require(fraction > 0, "JV: Nothing to split");
 
         if (token == address(0)) {
             for (uint256 i = 0; i < voters.length; i++) {
                 address payable voter = payable(voters[i]);
-                payable(voter).sendValue(revenue);
+                payable(voter).sendValue(fraction);
             }
         } else {
             for (uint256 i = 0; i < voters.length; i++) {
-                IERC20(token).transfer(voters[i], revenue);
+                IERC20(token).transfer(voters[i], fraction);
             }
         }
 
-        emit RevenueSplit(revenue, voters);
+        emit RevenueSplit(fraction, voters);
     }
 
     /*
@@ -419,20 +419,16 @@ contract JointVenture is VoterManager, ProposerManager {
             _proposals[i - from] = proposals[proposalIdsTemp[i]];
     }
 
-    /// @dev Returns split of revenue for each voter based on the current balance in the contract
-    /// @param token token which funds will be split from.
-    /// @return split - amount which each voter will receive.
-    function getRevenueSplit(address token)
-        public
-        view
-        returns (uint256 split)
-    {
+    /// @dev Returns total revenue for each token. If address(0) is passed, gets total revenue for ETH
+    /// @param token token which funds will be get.
+    /// @return total - amount that JV hold for token address.
+    function getRevenue(address token) public view returns (uint256 total) {
         if (token == address(0)) {
             if (address(this).balance > 0) {
-                return address(this).balance / voters.length;
+                return address(this).balance;
             }
         } else if (IERC20(token).balanceOf(address(this)) > 0) {
-            return IERC20(token).balanceOf(address(this)) / voters.length;
+            return IERC20(token).balanceOf(address(this));
         }
     }
 }
