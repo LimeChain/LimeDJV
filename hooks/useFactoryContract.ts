@@ -14,6 +14,6 @@ export default function useFactoryContract() {
       const config = NETWORK_CONFIG[mappingChainIdConfig[chainId]];
       setAddress(config.factory_address);
     }
-  })
+  }, [chainId])
     return useContract<any>(address, Factory_ABI);
 }

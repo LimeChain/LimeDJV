@@ -7,12 +7,9 @@ import Modal from "../components/Shared/Modal";
 import SideMenu from "../components/Shared/SideMenu";
 import Title from "../components/Shared/Title";
 import Wrapper from "../components/Shared/Wrapper";
-import StepBar, { StepBarProps } from "../components/StepBar";
 import VentureCard from "../components/VentureCard";
-import { NETWORK_CONFIG } from "../config/network";
 import useFactoryContract from "../hooks/useFactoryContract";
 import { useGlobalContext } from "../hooks/useGlobalContext";
-import { mappingChainIdConfig } from "../utils";
 
 const MyVentures = () => {
   const [isModalShow, setIsModalShown] = useState(false);
@@ -30,7 +27,6 @@ const MyVentures = () => {
   useEffect(() => {
     const loadVentures = async () => {
       setMyVentures([])
-    
 
       if (!account) return;
       if (!isWalletConnected) return;
@@ -38,7 +34,7 @@ const MyVentures = () => {
       setMyVentures(instantiations);
     };
     loadVentures();
-  }, [account, library, isWalletConnected]);
+  }, [account, library, chainId, isWalletConnected]);
 
   return (
     <>
