@@ -42,7 +42,7 @@ const ActiveVenture = () => {
         const proposers = await ventureContract.getProposers();
         const isVoter = await ventureContract.isVoter(account);
         const isProposer = await ventureContract.isProposer(account);
-        const revenueSplit = await ventureContract.getRevenueSplit(
+        const revenueSplit = await ventureContract.getRevenue(
           "0x0000000000000000000000000000000000000000"
         );
         setVentureInfo({
