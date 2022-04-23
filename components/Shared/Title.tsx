@@ -1,13 +1,17 @@
 import React from "react";
+import useEagerConnect from "../../hooks/useEagerConnect";
 
 const Title = ({ text }) => {
+  const triedToEagerConnect = useEagerConnect();
 
   return (
     <div className="title-wrapper">
       <div>
         <h2>{text}</h2>
       </div>
-     
+      <div>
+        <Account triedToEagerConnect={triedToEagerConnect} />
+      </div>
       <style jsx>{`
         .title-wrapper {
           display: flex;
