@@ -9,7 +9,7 @@ import { getParamFromTxEvent } from "./utils";
 
 const zeroAddress = ethers.constants.AddressZero;
 
-describe.only("JointVenture", function () {
+describe("JointVenture", function () {
   let jv: JointVenture;
   let callInstance: TestCalls
   let tokenInstance: ERC20Mock
@@ -23,7 +23,7 @@ describe.only("JointVenture", function () {
 
   beforeEach(async function () {
     accounts = await ethers.getSigners();
-    [deployer, voter1, voter2, proposer1, proposer2, nonVoter, nonProposer] = accounts;
+    [deployer, voter1, voter2, proposer1, proposer2, nonVoter] = accounts;
 
     const JointVenture = await ethers.getContractFactory("JointVenture");
     jv = await JointVenture.deploy("name", "description", [voter1.address, voter2.address], [proposer1.address, proposer2.address], 2);
