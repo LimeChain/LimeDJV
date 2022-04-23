@@ -2,6 +2,9 @@
 pragma solidity 0.8.11;
 
 contract VoterManager {
+    /*
+     *  Events
+     */
     event VoterAddition(address indexed voter);
     event VoterRemoval(address indexed voter);
     event RequirementChange(uint256 required);
