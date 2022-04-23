@@ -1,16 +1,28 @@
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
+import Account from "../components/Account";
+import NativeCurrencyBalance from "../components/NativeCurrencyBalance";
+import TokenBalance from "../components/TokenBalance";
+import { ALBT_TOKEN_ADDRESS } from "../constants";
 import Button from "../components/Shared/Button";
 import { useRouter } from "next/dist/client/router";
+import { addNetwork, changeCurrentNetwork, getMetamaskNetworkParams, getMetamaskProvider, MetamaskErrorCodes } from "../utils/metamask";
+import { useGlobalContext } from "../hooks/useGlobalContext";
+import { useEffect } from "react";
+import { getNetworkIndex } from "../utils/network";
+
 
 function Home() {
+  const { account, library, deactivate, chainId, error } = useWeb3React();
 
   const router = useRouter();
   
   return (
     <div className="container">
       <Head>
-        <title>Lime DJV</title>
+        <title>Hackaton</title>
         <link rel="icon" href="/favicon.ico" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,900&display=swap" rel="stylesheet"></link>
       </Head>
@@ -26,10 +38,22 @@ function Home() {
           <Link href="/my-ventures">
             <a>Dashboard</a>
           </Link>
+          {/* <Account triedToEagerConnect={triedToEagerConnect} /> */}
         </nav>
       </header>
 
       <main>
+        {/* <h1>
+          Welcome to Hackaton template
+        </h1>
+
+        {isConnected && (
+          <section>
+            <NativeCurrencyBalance />
+
+            <TokenBalance tokenAddress={ALBT_TOKEN_ADDRESS} symbol="ALBT" />
+          </section>
+        )} */}
         <div className="welcome-title">
           <div className="first-line-text">
             <h1 className="blue">Create</h1>
@@ -39,7 +63,7 @@ function Home() {
             <h1 className="blue margin-top-negative">on-chain</h1>
           </div>
           <div className="button-wrapper">
-          <Button label="start now" disabled={false} onClick={() => { router.push('/my-ventures'); } } className={undefined}></Button>
+          <Button label="start now" disabled={false} onClick={() => {router.push('/my-ventures')}}></Button>
           </div>
         </div>
       </main>

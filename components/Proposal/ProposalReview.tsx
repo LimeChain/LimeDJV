@@ -3,17 +3,19 @@ import { useGlobalContext } from "../../hooks/useGlobalContext";
 const ProposalReview = () => {
   const { proposalDetails, proposalActions } = useGlobalContext();
 
+  const details = proposalDetails.proposalDetails;
+
   return (
     <>
       <div className="wrapper">
         <div className="inner-wrapper">
           <div className="label">Title</div>
-          <p id="name">{proposalDetails.title}</p>
+          <p id="name">{details.title}</p>
         </div>
 
         <div className="inner-wrapper">
           <div className="label">Description</div>
-          <p id="description">{proposalDetails.description}</p>
+          <p id="description">{details.description}</p>
         </div>
 
         <div className="inner-wrapper" style={{ flexWrap: "wrap" }}>

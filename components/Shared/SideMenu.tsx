@@ -7,7 +7,7 @@ const SideMenu = ({}) => {
       <nav>
         <Link href="/">
           <a className="margin-top margin-bottom">
-            <img width={60} height={60} src="/images/limedjv.png" />
+            <img width={60} height={60} src="/svgs/limedjv.png" />
           </a>
         </Link>
         <Link href="/">

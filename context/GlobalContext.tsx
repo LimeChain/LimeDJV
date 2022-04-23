@@ -1,8 +1,8 @@
 import { Web3ReactProvider } from "@web3-react/core";
 import React, { createContext, useState } from "react";
-import { NETWORK_CONFIG } from "../config/network";
+import { NETWORK_CONFIG } from "../config/networks";
+import getLibrary from "../getLibrary";
 import { useWalletConnection } from "../hooks/useWalletConnection";
-import getLibrary from "../utils/network";
 
 const initialState: AppContext = {
   createVenture: {

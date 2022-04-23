@@ -1,8 +1,12 @@
-import { useGlobalContext } from "../../hooks/useGlobalContext";
+import { Contract } from "ethers";
+import { useState } from "react";
 import Toggle from "react-toggle";
+import MOCK_TOKEN_ABI from '../../contracts/MockToken.json';
+import { useGlobalContext } from "../../hooks/useGlobalContext";
 
 const ProposalActions = () => {
   const { proposalActions, setProposalActions } = useGlobalContext();
+  const [contractFunctions, setContractFunctions] = useState<string[]>([]);
 
   const updateProposalAction = (val) => {
     const value = val.target.value;
@@ -38,6 +42,20 @@ const ProposalActions = () => {
     setProposalActions(newProposalActions);
   };
 
+  const loadContractFunctions = (address: string) => {
+    const contract = new Contract(address, MOCK_TOKEN_ABI);
+    const functonFragments = contract.interface.functions;
+
+    setContractFunctions(
+      Object
+        .keys(contract.interface.functions)
+        .map(key => {
+          const fragment = functonFragments[key];
+          return fragment.name;
+        })
+    );
+  }
+
   return (
     <>
       <div className="wrapper">
@@ -62,7 +80,10 @@ const ProposalActions = () => {
                   </label>
                   <br></br>
                   <input
-                    onChange={(val) => updateProposalAction(val)}
+                    onChange={(val) => {
+                      updateProposalAction(val);
+                      loadContractFunctions(val.target.value);
+                    }}
                     className="form-input"
                     type="text"
                     id={`targetAddress-${index}`}
@@ -118,9 +139,18 @@ const ProposalActions = () => {
                   id={`selectedFunction-${index}`}
                   name="selectedFunction"
                 >
-                  <option value="balanceOf">balanceOf</option>
-                  <option value="getDeposit">getDeposit</option>
+                  {
+                    contractFunctions
+                      .map((functionName) => {
+                        return (
+                          <>
+                            <option value={functionName}>{functionName}</option>
+                          </>
+                        )
+                      })
+                  }
                 </select>
+                <br></br>
               </>
             );
           })}
