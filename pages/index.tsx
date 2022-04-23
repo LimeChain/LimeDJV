@@ -1,5 +1,7 @@
 import { useWeb3React } from "@web3-react/core";
-
+import Head from "next/head";
+import Link from "next/link";
+import Button from "../components/Shared/Button";
 import { useRouter } from "next/dist/client/router";
 
 function Home() {
@@ -9,11 +11,23 @@ function Home() {
   
   return (
     <div className="container">
-     
+      <Head>
+        <title>Hackaton</title>
+        <link rel="icon" href="/favicon.ico" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,900&display=swap" rel="stylesheet"></link>
+      </Head>
 
       <header>
         <nav>
-          
+          <Link href="/">
+            <a>Home</a>
+          </Link>
+          <Link href="/how-it-works">
+            <a>How it works</a>
+          </Link>
+          <Link href="/my-ventures">
+            <a>Dashboard</a>
+          </Link>
         </nav>
       </header>
 
@@ -27,6 +41,7 @@ function Home() {
             <h1 className="blue margin-top-negative">on-chain</h1>
           </div>
           <div className="button-wrapper">
+          <Button label="start now" disabled={false} onClick={() => { router.push('/my-ventures'); } } className={undefined}></Button>
           </div>
         </div>
       </main>
