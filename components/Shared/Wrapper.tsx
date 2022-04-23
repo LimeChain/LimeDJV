@@ -6,7 +6,7 @@ const Wrapper = ({ children }) => {
       <div className="wrapper">{children}</div>
       <style jsx>{`
         .wrapper {
-          padding: 30px 20px 30px 20px;
+          padding: 58px 70px 50px 60px;
         }
       `}</style>
     </>
