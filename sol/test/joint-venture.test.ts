@@ -356,7 +356,7 @@ describe("JointVenture", function () {
       expect(proposers, "new voter not included").not.to.include(voter1.address)
     })
     
-    it("should get revenue split by eth", async () => {
+    it("should get total revenue by eth", async () => {
       const oneEth = ethers.utils.parseEther('1')
 
       let balance = await ethers.provider.getBalance(jv.address)
@@ -369,18 +369,18 @@ describe("JointVenture", function () {
 
       await deployer.sendTransaction(tx);
 
-      const rs = await jv.getRevenueSplit(zeroAddress);
+      const rs = await jv.getRevenue(zeroAddress);
       
-      expect(rs, "revenue not correctly split").to.equal(ethers.BigNumber.from(oneEth).div(((await jv.getVoters()).length)))
+      expect(rs, "revenue not correctly split").to.equal(ethers.BigNumber.from(oneEth))
     })
 
-    it("should get revenue split by token", async () => {
+    it("should get total revenue by token", async () => {
       const oneToken = ethers.utils.parseEther('1');
       await tokenInstance.mint(jv.address, oneToken);
       
-      const rs = await jv.getRevenueSplit(tokenInstance.address);
+      const rs = await jv.getRevenue(tokenInstance.address);
 
-      expect(rs, "revenue not correctly split").to.equal(ethers.BigNumber.from(oneToken).div(((await jv.getVoters()).length)))
+      expect(rs, "revenue not correctly split").to.equal(ethers.BigNumber.from(oneToken))
     })
     
     it("should transfer eth revenue correctly", async () => {
