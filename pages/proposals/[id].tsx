@@ -13,7 +13,7 @@ const Proposals = () => {
   const [proposals, setProposals] = useState([]);
   const [proposalsCount, setProposalsCount] = useState<number>(0);
   const ventureContract = useJointVentureContract(address) as JointVenture;
-
+ 
   useEffect(() => {
     setAddress(history.query.id);
   }, [history.query]);
@@ -50,14 +50,14 @@ const Proposals = () => {
         </div>
         <div className="main">
           {proposals.map((proposal, index) => {
-            console.log(proposals);
+            const id = proposal.id;
             return (
               <>
                 <ActiveProposal
                   key={proposal}
-                  id={proposal.id}
+                  id={id.toString()}
                   proposal={proposal}
-                  onClick={() => history.push(`/single-proposal/${address}`)}
+                  onClick={() => history.push(`/single-proposal/${address}?propId=${id.toString()}`)}
                   width="48%"
                 />
               </>

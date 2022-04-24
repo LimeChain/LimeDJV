@@ -151,13 +151,16 @@ const ActiveVenture = () => {
                 <div className="title">Active proposals</div>
                 <div>
                   {(ventureInfo as any).proposals?.map((proposal, index) => {
-                    console.log(JSON.stringify(proposal));
+                    const id = proposal.id;
                     return (
                       <ActiveProposal
+                        id={id.toString()}
                         key={index}
                         proposal={proposal}
                         onClick={() =>
-                          history.push(`/single-proposal/${address}`)
+                          history.push(
+                            `/single-proposal/${address}?propId=${id.toString()}`
+                          )
                         }
                       />
                     );

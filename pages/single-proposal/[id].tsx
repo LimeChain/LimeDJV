@@ -1,8 +1,15 @@
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
 import SideMenu from "../../components/Shared/SideMenu";
 import Wrapper from "../../components/Shared/Wrapper";
 
 const SingleProposal = () => {
+  const history = useRouter();
+
+  useEffect(() => {
+    console.log(history.query.propId)
+  }, [history.query]);
+
   return (
     <>
       <SideMenu></SideMenu>
