@@ -1,9 +1,9 @@
 import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const Voters = () => {
-  const { voters, setVoters }:any = useGlobalContext();
+  const { voters, setVoters }: any = useGlobalContext();
 
-  const updateAddress = (val:any) => {
+  const updateAddress = (val: any) => {
     const value = val.target.value;
     if (val.target.id == "address1") {
       setVoters({
@@ -24,7 +24,7 @@ const Voters = () => {
     <>
       <div className="wrapper">
         <form>
-          <label className="form-label">Voters</label>
+          <label className="form-label">Partners</label>
           <br />
           <input
             onChange={(val) => updateAddress(val)}

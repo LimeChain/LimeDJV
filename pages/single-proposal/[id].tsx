@@ -22,7 +22,7 @@ const SingleProposal = () => {
           </div>
           <div className="voters">
             <div className="inner">
-              <div className="label">Voters</div>
+              <div className="label">Partners</div>
               <div>
                 <div className="title">
                   0x44C9197CC8e9081d1d44F9e89fA77CD935ACE2aA

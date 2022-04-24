@@ -1,7 +1,7 @@
 import { useGlobalContext } from "../hooks/useGlobalContext";
 
 const Review = () => {
-  const { ventureDetails, voters, proposers }:any = useGlobalContext();
+  const { ventureDetails, voters, proposers }: any = useGlobalContext();
 
   return (
     <>
@@ -17,7 +17,7 @@ const Review = () => {
         </div>
 
         <div className="inner-wrapper">
-          <div className="label">Voters</div>
+          <div className="label">Partners</div>
           <div>
             <p id="voters">{voters.address1}</p>
             <p id="voters">{voters.address2}</p>
@@ -27,8 +27,12 @@ const Review = () => {
         <div className="inner-wrapper">
           <div className="label">Proposers</div>
           <div>
-            {proposers.map((proposer:any, index:any) => {
-              return <p key={index} id="proposers">{proposer.address}</p>;
+            {proposers.map((proposer: any, index: any) => {
+              return (
+                <p key={index} id="proposers">
+                  {proposer.address}
+                </p>
+              );
             })}
           </div>
         </div>

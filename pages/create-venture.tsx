@@ -18,7 +18,8 @@ import { mappingChainIdConfig } from "../utils";
 import Factory_ABI from "../contracts/Factory.json";
 
 const CreateVenture = () => {
-  const { ventureDetails, voters, proposers, isWalletConnected } = useGlobalContext();
+  const { ventureDetails, voters, proposers, isWalletConnected } =
+    useGlobalContext();
   const router = useRouter();
   const { account, library, chainId } = useWeb3React();
   const history = useRouter();
@@ -34,7 +35,7 @@ const CreateVenture = () => {
     },
     {
       index: 1,
-      title: "Voters",
+      title: "Partners",
       isActive: false,
       children: <Voters></Voters>,
     },
@@ -53,10 +54,10 @@ const CreateVenture = () => {
   ]);
 
   useEffect(() => {
-    if(!isWalletConnected) {
-      history.push('/my-ventures')
+    if (!isWalletConnected) {
+      history.push("/my-ventures");
     }
-  }, [isWalletConnected])
+  }, [isWalletConnected]);
 
   const nextClickHandler = () => {
     const activeIndex = progressSteps.findIndex((step) => step.isActive);
@@ -95,7 +96,11 @@ const CreateVenture = () => {
     });
     const config = NETWORK_CONFIG[mappingChainIdConfig[chainId]];
     const factoryAddress = config.factory_address;
-    const factoryContract = new Contract(factoryAddress, Factory_ABI, library.getSigner(account));
+    const factoryContract = new Contract(
+      factoryAddress,
+      Factory_ABI,
+      library.getSigner(account)
+    );
     try {
       const tx = await factoryContract.create(
         ventureDetails.name,
@@ -146,7 +151,11 @@ const CreateVenture = () => {
               ></StepBar>
               <div className="steps-wrapper">
                 {progressSteps.map((step, key) => {
-                  return <div key={key} hidden={!step.isActive}>{step.children}</div>;
+                  return (
+                    <div key={key} hidden={!step.isActive}>
+                      {step.children}
+                    </div>
+                  );
                 })}
               </div>
             </div>

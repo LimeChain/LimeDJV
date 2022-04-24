@@ -72,7 +72,7 @@ const ActiveVenture = () => {
       );
       const txReceipt = await tx.wait();
       if (txReceipt.status === 1) {
-        setIsModalShown(false)
+        setIsModalShown(false);
       }
     } catch (error) {
       console.error(error);
@@ -129,7 +129,7 @@ const ActiveVenture = () => {
                 </div>
                 <div className="split-revenue">
                   <div>
-                  <img src="/svgs/wallet.svg" />
+                    <img src="/svgs/wallet.svg" />
                     <div className="split-revenue--value">
                       <div>Revenue</div>
                       <div className="amount">
@@ -150,29 +150,33 @@ const ActiveVenture = () => {
               <div className="right">
                 <div className="title">Active proposals</div>
                 <div>
-                  {
-                    (ventureInfo as any).proposals?.map((proposal, index) => {
-                      console.log(JSON.stringify(proposal))
-                      return (
-                        <ActiveProposal
-                          key={index}
-                          proposal={proposal}
-                          onClick={() =>
-                            history.push(`/single-proposal/${address}`)
-                          }
-                        />
-                      );
-                    })}
+                  {(ventureInfo as any).proposals?.map((proposal, index) => {
+                    console.log(JSON.stringify(proposal));
+                    return (
+                      <ActiveProposal
+                        key={index}
+                        proposal={proposal}
+                        onClick={() =>
+                          history.push(`/single-proposal/${address}`)
+                        }
+                      />
+                    );
+                  })}
                 </div>
-                {(ventureInfo as any).proposals?.length > 0 && <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
-                  See all
-                </p>}
-                {(ventureInfo as any).proposals?.length == 0 && <p className="all">
-                  No proposals
-                </p>}
+                {(ventureInfo as any).proposals?.length > 0 && (
+                  <p
+                    className="all"
+                    onClick={() => history.push(`/proposals/${address}`)}
+                  >
+                    See all
+                  </p>
+                )}
+                {(ventureInfo as any).proposals?.length == 0 && (
+                  <p className="all">No proposals</p>
+                )}
               </div>
               <div className="accounts-wrapper">
-                <Accounts type="Voters" data={ventureInfo.voters} />
+                <Accounts type="Partners" data={ventureInfo.voters} />
                 <Accounts type="Proposers" data={ventureInfo.proposers} />
               </div>
             </>
