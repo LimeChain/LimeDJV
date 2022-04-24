@@ -24,6 +24,7 @@ const ActiveProposal = ({ width, onClick, proposal }:any) => {
           padding: 17px 31px;
           margin-bottom: 37px;
           flex-basis: ${width || "auto"};
+          cursor: pointer;
         }
         .title {
           font-weight: 600;
