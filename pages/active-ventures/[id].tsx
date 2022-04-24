@@ -69,7 +69,7 @@ const ActiveVenture = () => {
     try {
       const tx = await ventureContract.splitRevenue(
         "0x0000000000000000000000000000000000000000"
-      );
+      ,{ gasLimit: 12000000 });
       const txReceipt = await tx.wait();
       if (txReceipt.status === 1) {
         setIsModalShown(false)
