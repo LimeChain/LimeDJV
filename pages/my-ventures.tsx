@@ -58,7 +58,7 @@ const MyVentures = () => {
       <Wrapper>
         <Title text="My ventures" />
         <Button
-          disabled={!account}
+          disabled={!isWalletConnected}
           size="sm"
           className="margin-bottom"
           label="Create venture"

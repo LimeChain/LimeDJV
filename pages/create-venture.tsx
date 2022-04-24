@@ -1,7 +1,7 @@
 import { useWeb3React } from "@web3-react/core";
 import { Contract } from "ethers";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Proposers from "../components/Proposers";
 import Review from "../components/Review";
 import Button from "../components/Shared/Button";
@@ -18,10 +18,10 @@ import { mappingChainIdConfig } from "../utils";
 import Factory_ABI from "../contracts/Factory.json";
 
 const CreateVenture = () => {
-  const { ventureDetails, voters, proposers } = useGlobalContext();
+  const { ventureDetails, voters, proposers, isWalletConnected } = useGlobalContext();
   const router = useRouter();
   const { account, library, chainId } = useWeb3React();
-
+  const history = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -51,6 +51,12 @@ const CreateVenture = () => {
       children: <Review></Review>,
     },
   ]);
+
+  useEffect(() => {
+    if(!isWalletConnected) {
+      history.push('/my-ventures')
+    }
+  }, [isWalletConnected])
 
   const nextClickHandler = () => {
     const activeIndex = progressSteps.findIndex((step) => step.isActive);
