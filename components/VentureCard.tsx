@@ -1,17 +1,17 @@
 import { useWeb3React } from "@web3-react/core";
 import React, { useEffect, useState } from "react";
-import useJointVentureContract from "../hooks/useJointVentureContract";
-import { shortenEthereumAddress } from "../utils";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import useJointVentureContract from "../hooks/useJointVentureContract";
+import { shortenEthereumAddress } from "../utils";
 
 const VentureCard = ({ address, onClick }:any) => {
   const { account } = useWeb3React();
-  const ventureContract = useJointVentureContract(address);
-  const [ventureInfo, setVentureInfo] = useState<any>({});
+  const ventureContract = useJointVentureContract(account);
+  const [ventureInfo, setVentureInfo] = useState({});
 
   useEffect(() => {
-    if(!account) {
+    if (!account) {
       return;
     }
     const getVentureInfo = async () => {
@@ -61,8 +61,8 @@ const VentureCard = ({ address, onClick }:any) => {
                   {ventureInfo.isVoter
                     ? "Voter"
                     : ventureInfo.isProposer
-                    ? "Proposer"
-                    : ""}
+                      ? "Proposer"
+                      : ""}
                 </div>
               </div>
             </div>

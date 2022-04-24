@@ -15,7 +15,7 @@ import useJointVentureContract from "../../hooks/useJointVentureContract";
 
 const ActiveVenture = () => {
   const history = useRouter();
-  const { account, library } = useWeb3React();
+  const { account } = useWeb3React();
   const [address, setAddress] = useState("");
   const ventureContract = useJointVentureContract(address) as JointVenture;
   const [ventureInfo, setVentureInfo] = useState({});
@@ -69,7 +69,7 @@ const ActiveVenture = () => {
     try {
       const tx = await ventureContract.splitRevenue(
         "0x0000000000000000000000000000000000000000"
-      ,{ gasLimit: 12000000 });
+      );
       const txReceipt = await tx.wait();
       if (txReceipt.status === 1) {
         setIsModalShown(false)
@@ -116,10 +116,10 @@ const ActiveVenture = () => {
                 <div className="proposal">
                   <div className="contract flex">
                     <div className="label">Address</div>
-                    <div className="value margin-right">
+                    <div className="value">
                       {address}
-                      <img className="margin-left" src="/svgs/paper.svg" />
-                      <img src="/svgs/logout.svg" />
+                      <img src="" alt="icon" />
+                      <img src="" alt="icon" />
                     </div>
                   </div>
                   <div className="description">
@@ -129,7 +129,7 @@ const ActiveVenture = () => {
                 </div>
                 <div className="split-revenue">
                   <div>
-                  <img src="/svgs/wallet.svg" />
+                    <img src="" alt="icon" />
                     <div className="split-revenue--value">
                       <div>Revenue</div>
                       <div className="amount">
@@ -164,12 +164,9 @@ const ActiveVenture = () => {
                       );
                     })}
                 </div>
-                {(ventureInfo as any).proposals?.length != 0 && <p className="all" onClick={() => history.push("/proposals")}>
+                <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
                   See all
-                </p>}
-                {(ventureInfo as any).proposals?.length == 0 && <p className="all">
-                  No proposals
-                </p>}
+                </p>
               </div>
               <div className="accounts-wrapper">
                 <Accounts type="Voters" data={ventureInfo.voters} />
