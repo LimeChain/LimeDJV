@@ -1,22 +1,23 @@
+import { useWeb3React } from "@web3-react/core";
+import { utils } from "ethers";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import Accounts from "../../components/Accounts";
 import ActiveProposal from "../../components/ActiveProposal";
 import Button from "../../components/Shared/Button";
+import Loader from "../../components/Shared/Loader";
+import Modal from "../../components/Shared/Modal";
 import SideMenu from "../../components/Shared/SideMenu";
 import Title from "../../components/Shared/Title";
 import Wrapper from "../../components/Shared/Wrapper";
-import Accounts from "../../components/Accounts";
-import { useRouter } from "next/router";
-import { useWeb3React } from "@web3-react/core";
+import { JointVenture } from "../../contracts/types";
 import useJointVentureContract from "../../hooks/useJointVentureContract";
-import Loader from "../../components/Shared/Loader";
-import { utils } from "ethers";
-import Modal from "../../components/Shared/Modal";
 
 const ActiveVenture = () => {
   const history = useRouter();
   const { account } = useWeb3React();
   const [address, setAddress] = useState("");
-  const ventureContract = useJointVentureContract(address);
+  const ventureContract = useJointVentureContract(address) as JointVenture;
   const [ventureInfo, setVentureInfo] = useState({});
   const [loading, setLoading] = useState(false);
   const [isModalShown, setIsModalShown] = useState(false);
@@ -45,6 +46,7 @@ const ActiveVenture = () => {
         const revenueSplit = await ventureContract.getRevenue(
           "0x0000000000000000000000000000000000000000"
         );
+
         setVentureInfo({
           name,
           description,
@@ -114,10 +116,10 @@ const ActiveVenture = () => {
                 <div className="proposal">
                   <div className="contract flex">
                     <div className="label">Address</div>
-                    <div className="value">
+                    <div className="value margin-right">
                       {address}
-                      <img src="" alt="icon" />
-                      <img src="" alt="icon" />
+                      <img src="/svgs/paper.svg" />
+                      <img src="/svgs/logout.svg" />
                     </div>
                   </div>
                   <div className="description">
@@ -127,7 +129,7 @@ const ActiveVenture = () => {
                 </div>
                 <div className="split-revenue">
                   <div>
-                    <img src="" alt="icon" />
+                  <img src="/svgs/wallet.svg" />
                     <div className="split-revenue--value">
                       <div>Revenue</div>
                       <div className="amount">
@@ -148,17 +150,19 @@ const ActiveVenture = () => {
               <div className="right">
                 <div className="title">Active proposals</div>
                 <div>
-                  {proposals?.map((proposal, index) => {
-                    return (
-                      <ActiveProposal
-                        key={index}
-                        proposal={proposal}
-                        onClick={() =>
-                          history.push(`/single-proposal/${address}`)
-                        }
-                      />
-                    );
-                  })}
+                  {
+                    (ventureInfo as any).proposals?.map((proposal, index) => {
+                      console.log(JSON.stringify(proposal))
+                      return (
+                        <ActiveProposal
+                          key={index}
+                          proposal={proposal}
+                          onClick={() =>
+                            history.push(`/single-proposal/${address}`)
+                          }
+                        />
+                      );
+                    })}
                 </div>
                 <p className="all" onClick={() => history.push("/proposals")}>
                   See all
