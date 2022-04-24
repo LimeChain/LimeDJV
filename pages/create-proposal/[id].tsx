@@ -170,7 +170,7 @@ const CreateProposal = () => {
         ) : success && !loading ? (
           <div>
             <div className="loader">
-              <span>The proposal was successfuly executed!</span>
+              <span>The proposal was successfully created!</span>
               <Button
                 label={"View"}
                 onClick={() => router.push(`/proposals/${address}`)}
