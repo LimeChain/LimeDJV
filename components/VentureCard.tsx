@@ -5,7 +5,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import useJointVentureContract from "../hooks/useJointVentureContract";
 import { shortenEthereumAddress } from "../utils";
 
-const VentureCard = ({ address, onClick }:any) => {
+const VentureCard = ({ address, onClick }: any) => {
   const { account } = useWeb3React();
   const ventureContract = useJointVentureContract(address);
   const [ventureInfo, setVentureInfo] = useState({});
@@ -15,7 +15,7 @@ const VentureCard = ({ address, onClick }:any) => {
       return;
     }
     const getVentureInfo = async () => {
-      if(!ventureContract) {
+      if (!ventureContract) {
         return;
       }
       const name = await ventureContract.name();
@@ -55,8 +55,15 @@ const VentureCard = ({ address, onClick }:any) => {
           <>
             <div className="top">
               <div className="title font-main font-600">{ventureInfo.name}</div>
-              <div className="contract font-secondary font-600">
-                {shortenEthereumAddress(address)}
+              <div
+                style={{ display: "flex" }}
+                className="contract font-secondary font-600"
+              >
+                <div>{shortenEthereumAddress(address)}</div>
+                <div>
+                  <img className="margin-left" src="/svgs/paper.svg" />
+                  <img src="/svgs/logout.svg" />
+                </div>
               </div>
               <div className="flex">
                 <div className="font-secondary font-600">Your role</div>
@@ -64,8 +71,8 @@ const VentureCard = ({ address, onClick }:any) => {
                   {ventureInfo.isVoter
                     ? "Voter"
                     : ventureInfo.isProposer
-                      ? "Proposer"
-                      : ""}
+                    ? "Proposer"
+                    : ""}
                 </div>
               </div>
             </div>
