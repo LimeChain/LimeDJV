@@ -167,7 +167,7 @@ const ActiveVenture = () => {
                 {(ventureInfo as any).proposals?.length > 0 && <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
                   See all
                 </p>}
-                {(ventureInfo as any).proposals?.length == 0 && <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
+                {(ventureInfo as any).proposals?.length == 0 && <p className="all">
                   No proposals
                 </p>}
               </div>
