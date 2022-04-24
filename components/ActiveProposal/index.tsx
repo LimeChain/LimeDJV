@@ -1,18 +1,12 @@
 import React from "react";
 import { shortenEthereumAddress } from "../../utils";
 
-const ActiveProposal = ({ width }:any) => {
+const ActiveProposal = ({ width, onClick, proposal }:any) => {
   return (
     <>
-      <div className="wrapper">
-        <div className="title">Transfer contract ownership</div>
-        <div className="description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, qui... <br />
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
-        </div>
+      <div onClick={onClick} className="wrapper">
+        <div className="title">{proposal?.name || ""}</div>
+        <div className="description">{proposal?.description || ""}</div>
         <div className="proposer">
           <div className="by">By:</div>
           <div className="address">

@@ -15,7 +15,7 @@ import Modal from "../../components/Shared/Modal";
 const ActiveVenture = () => {
   const history = useRouter();
   const { account } = useWeb3React();
-  const [address, setAddress] = useState<any>("");
+  const [address, setAddress] = useState("");
   const ventureContract = useJointVentureContract(address);
   const [ventureInfo, setVentureInfo] = useState({});
   const [loading, setLoading] = useState(false);
@@ -68,14 +68,16 @@ const ActiveVenture = () => {
       const tx = await ventureContract.splitRevenue(
         "0x0000000000000000000000000000000000000000"
       );
-      if (tx.status === 1) {
+      const txReceipt = await tx.wait();
+      if (txReceipt.status === 1) {
+        setIsModalShown(false)
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const { revenueSplit, name }:any = ventureInfo;
+  const { revenueSplit, name, proposals } = ventureInfo;
 
   return (
     <>
@@ -146,8 +148,17 @@ const ActiveVenture = () => {
               <div className="right">
                 <div className="title">Active proposals</div>
                 <div>
-                  <ActiveProposal />
-                  <ActiveProposal />
+                  {proposals?.map((proposal, index) => {
+                    return (
+                      <ActiveProposal
+                        key={index}
+                        proposal={proposal}
+                        onClick={() =>
+                          history.push(`/single-proposal/${address}`)
+                        }
+                      />
+                    );
+                  })}
                 </div>
                 <p className="all" onClick={() => history.push("/proposals")}>
                   See all
