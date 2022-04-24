@@ -174,7 +174,7 @@ const CreateProposal = () => {
               <span>The proposal was successfuly executed!</span>
               <Button
                 label={"View"}
-                onClick={() => router.push("/proposals")}
+                onClick={() => router.push(`/proposals/${address}`)}
               />
             </div>
           </div>
@@ -188,7 +188,11 @@ const CreateProposal = () => {
               ></StepBar>
               <div className="steps-wrapper">
                 {progressSteps.map((step, index) => {
-                  return <div key={index} hidden={!step.isActive}>{step.children}</div>;
+                  return (
+                    <div key={index} hidden={!step.isActive}>
+                      {step.children}
+                    </div>
+                  );
                 })}
               </div>
             </div>
