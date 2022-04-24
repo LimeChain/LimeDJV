@@ -12,6 +12,7 @@ contract Factory {
      */
     mapping(address => bool) public isInstantiation;
     mapping(address => address[]) public instantiations;
+    address[] public allInstantiations;
 
     /*
      * Public functions
@@ -38,6 +39,13 @@ contract Factory {
         return instantiations[creator];
     }
 
+    // todo this should be outside of the contract
+    /// @dev Returns addresses of all of instantiations.
+    /// @return Returns number of instantiations ever created.
+    function getAllInstantiations() public view returns (address[] memory) {
+        return allInstantiations;
+    }
+
     /*
      * Internal functions
      */
@@ -46,6 +54,7 @@ contract Factory {
     function register(address instantiation) internal {
         isInstantiation[instantiation] = true;
         instantiations[msg.sender].push(instantiation);
+        allInstantiations.push(instantiation);
         emit ContractInstantiation(msg.sender, instantiation);
     }
 }

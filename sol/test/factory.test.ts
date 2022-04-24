@@ -60,4 +60,18 @@ describe("Factory", function () {
     expect(ethers.utils.isAddress(instantiations[0]), "not a valid address").to.be.true
     expect(ethers.utils.isAddress(instantiations[1]), "not a valid address").to.be.true
   })
+
+  it("should fetch all instances", async () => {
+    const voters = [voter1.address, voter2.address];
+    const proposers = [proposer1.address, proposer2.address];
+    const required = 2;
+    await factory.connect(deployer).create( "name1", "description1", voters, proposers, required)
+    await factory.connect(deployer).create( "name2", "description2", voters, proposers, required)
+    await factory.connect(voter1).create( "name3", "description3", voters, proposers, required)
+
+    const all = await factory.getAllInstantiations();
+
+    expect(all.length, "not correct length").to.equal(3)
+    expect(all, "not an array").to.be.an("array")
+  })
 });
