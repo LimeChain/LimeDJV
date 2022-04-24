@@ -6,8 +6,10 @@ import { getLocalStorage, setLocalStorage } from "../utils/localstorage";
 export const useWalletConnection = (initialState: any) => {
   const [isWalletConnected, setIsWalletConnected] = useState(initialState);
 
-  const _isWalletConnected = () =>
-    getLocalStorage(localStorageKeys.walletConnection) === "true";
+  const _isWalletConnected = () => {
+    const isConnected = getLocalStorage(localStorageKeys.walletConnection);
+    return isConnected;
+  }
 
   const _setIsWalletConnected = (connected: boolean) =>
     setLocalStorage(localStorageKeys.walletConnection, connected.toString());
