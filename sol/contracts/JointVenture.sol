@@ -277,10 +277,10 @@ contract JointVenture is VoterManager, ProposerManager {
         }
     }
 
-    function splitRevenue(address token) external payable onlyJointVenture {
-        uint256 fraction = getRevenue(token) / voters.length;
-
-        require(fraction > 0, "JV: Nothing to split");
+    function splitRevenue(address token) external payable {
+        uint256 total = getRevenue(token);
+        require(total > 0, "JV: Nothing to split");
+        uint256 fraction = total / voters.length;
 
         if (token == address(0)) {
             for (uint256 i = 0; i < voters.length; i++) {
