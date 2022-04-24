@@ -7,7 +7,6 @@ export const injected = new InjectedConnector({
 });
 
 export const walletConnect = (selectedChainId?: any) => {
-  console.log(selectedChainId)
   return new WalletConnectConnector({
     rpc: {
       [selectedChainId]: walletConnectSupportedNetworks[selectedChainId || 1],

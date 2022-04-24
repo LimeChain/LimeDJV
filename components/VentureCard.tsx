@@ -7,7 +7,7 @@ import { shortenEthereumAddress } from "../utils";
 
 const VentureCard = ({ address, onClick }:any) => {
   const { account } = useWeb3React();
-  const ventureContract = useJointVentureContract(account);
+  const ventureContract = useJointVentureContract(address);
   const [ventureInfo, setVentureInfo] = useState({});
 
   useEffect(() => {
@@ -15,6 +15,9 @@ const VentureCard = ({ address, onClick }:any) => {
       return;
     }
     const getVentureInfo = async () => {
+      if(!ventureContract) {
+        return;
+      }
       const name = await ventureContract.name();
       const description = await ventureContract.description();
       const proposalCount = await ventureContract.proposalCount();

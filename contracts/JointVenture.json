@@ -477,6 +477,11 @@
               "internalType": "bool",
               "name": "executed",
               "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "creator",
+              "type": "address"
             }
           ],
           "internalType": "struct JointVenture.Proposal[]",
@@ -654,6 +659,11 @@
           "internalType": "bool",
           "name": "executed",
           "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
         }
       ],
       "stateMutability": "view",

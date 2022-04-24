@@ -47,7 +47,6 @@ const Proposals = () => {
             <div className="title">Proposals</div>
             <div className="count">{`Total ${proposalsCount}`}</div>
           </div>
-          <Button size="sm" label="Create proposal" onClick={() => router.push('/create-proposal')} />
         </div>
         <div className="main">
           {
