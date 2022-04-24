@@ -12,7 +12,6 @@ import Title from "../../components/Shared/Title";
 import Wrapper from "../../components/Shared/Wrapper";
 import StepBar from "../../components/StepBar";
 import MOCK_TOKEN_ABI from "../../contracts/MockToken.json";
-import { JointVenture } from "../../contracts/types";
 import { useGlobalContext } from "../../hooks/useGlobalContext";
 import useJointVentureContract from "../../hooks/useJointVentureContract";
 import { ProposalAction } from "../../types";
