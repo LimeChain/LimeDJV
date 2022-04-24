@@ -15,7 +15,7 @@ import useJointVentureContract from "../../hooks/useJointVentureContract";
 
 const ActiveVenture = () => {
   const history = useRouter();
-  const { account } = useWeb3React();
+  const { account, library } = useWeb3React();
   const [address, setAddress] = useState("");
   const ventureContract = useJointVentureContract(address) as JointVenture;
   const [ventureInfo, setVentureInfo] = useState({});
@@ -164,9 +164,12 @@ const ActiveVenture = () => {
                       );
                     })}
                 </div>
-                <p className="all" onClick={() => history.push("/proposals")}>
+                {(ventureInfo as any).proposals?.length != 0 && <p className="all" onClick={() => history.push("/proposals")}>
                   See all
-                </p>
+                </p>}
+                {(ventureInfo as any).proposals?.length == 0 && <p className="all">
+                  No proposals
+                </p>}
               </div>
               <div className="accounts-wrapper">
                 <Accounts type="Voters" data={ventureInfo.voters} />

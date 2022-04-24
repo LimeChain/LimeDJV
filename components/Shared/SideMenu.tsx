@@ -20,6 +20,11 @@ const SideMenu = ({}) => {
             <img src="/svgs/category.svg" />
           </a>
         </Link>
+        <Link href="/all-ventures">
+          <a className="margin-top margin-bottom">
+            <img src="/svgs/category.svg" />
+          </a>
+        </Link>
         {/* <Account triedToEagerConnect={triedToEagerConnect} /> */}
       </nav>
       <style jsx>{`
