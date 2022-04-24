@@ -118,8 +118,8 @@ const ActiveVenture = () => {
                     <div className="label">Address</div>
                     <div className="value">
                       {address}
-                      <img src="" alt="icon" />
-                      <img src="" alt="icon" />
+                      <img className="margin-left" src="/svgs/paper.svg" />
+                      <img src="/svgs/logout.svg" />
                     </div>
                   </div>
                   <div className="description">
@@ -129,7 +129,7 @@ const ActiveVenture = () => {
                 </div>
                 <div className="split-revenue">
                   <div>
-                    <img src="" alt="icon" />
+                  <img src="/svgs/wallet.svg" />
                     <div className="split-revenue--value">
                       <div>Revenue</div>
                       <div className="amount">
