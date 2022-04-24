@@ -1,7 +1,7 @@
 import React from "react";
 import { shortenEthereumAddress } from "../../utils";
 
-const ActiveProposal = ({ width, onClick, proposal }:any) => {
+const ActiveProposal = ({ width, onClick, proposal, id }: any) => {
   return (
     <>
       <div onClick={onClick} className="wrapper">

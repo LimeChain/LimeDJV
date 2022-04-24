@@ -31,7 +31,7 @@ const Proposals = () => {
 
         setProposalsCount(proposalCount.toNumber());
         setProposals(proposals);
-      }
+      };
 
       getProposals();
     }
@@ -49,19 +49,20 @@ const Proposals = () => {
           </div>
         </div>
         <div className="main">
-          {
-            proposals.map((proposal, index) => {
-              return (
-                <>
-                  <ActiveProposal
-                    key={index}
-                    proposal={proposal}
-                    onClick={() => history.push(`/single-proposal/${address}`)}
-                    width="48%" />
-                </>
-              )
-            })
-          }
+          {proposals.map((proposal, index) => {
+            console.log(proposals);
+            return (
+              <>
+                <ActiveProposal
+                  key={proposal}
+                  id={proposal.id}
+                  proposal={proposal}
+                  onClick={() => history.push(`/single-proposal/${address}`)}
+                  width="48%"
+                />
+              </>
+            );
+          })}
         </div>
       </div>
 
