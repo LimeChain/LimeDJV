@@ -3,7 +3,7 @@ import { ProposalAction } from "../../types";
 import { FunctionParam } from "./ProposalActions";
 
 const ProposalReview = () => {
-  const { proposalDetails, proposalActions }:any = useGlobalContext();
+  const { proposalDetails, proposalActions }: any = useGlobalContext();
   console.log(proposalDetails);
 
   const details = proposalDetails.proposalDetails;
@@ -22,7 +22,7 @@ const ProposalReview = () => {
         </div>
 
         <div className="inner-wrapper" style={{ flexWrap: "wrap" }}>
-          {proposalActions.map((action: ProposalAction, index:any) => {
+          {proposalActions.map((action: ProposalAction, index: any) => {
             return (
               <>
                 <div className="inner-wrapper">
@@ -32,22 +32,20 @@ const ProposalReview = () => {
                       <div className="label">Target</div>
                       <p id="targetAddress">{action.targetAddress}</p>
                     </div>
-                    {
-                      action.functionParams.map((param: FunctionParam) => {
-                        return (
-                          <>
-                            <div style={{ display: "flex" }}>
-                              <div className="label">{param.name}</div>
-                              <p id="valueAttribute">{param.value}</p>
-                            </div>
-                          </>
-                        );
-                      })
-                    }
-                    <div style={{ display: "flex" }}>
+                    {action.functionParams.map((param: FunctionParam) => {
+                      return (
+                        <>
+                          <div style={{ display: "flex" }}>
+                            <div className="label">{param.name}</div>
+                            <p id="valueAttribute">{param.value}</p>
+                          </div>
+                        </>
+                      );
+                    })}
+                    {/* <div style={{ display: "flex" }}>
                       <div className="label">Value attribute</div>
                       <p id="valueAttribute">{`${action.numberOfZeroes} zeroes`}</p>
-                    </div>
+                    </div> */}
                     <div style={{ display: "flex" }}>
                       <div className="label">Function call</div>
                       <p id="functionCall">{action.selectedFunction}</p>
