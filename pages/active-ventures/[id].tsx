@@ -222,8 +222,8 @@ const ActiveVenture = () => {
         .value {
           color: #ffffff;
           font-weight: 600;
-
           color: #f6f3ff;
+          font-size: 14px;
         }
         .label {
           font-size: 18px;

@@ -482,6 +482,11 @@
               "internalType": "address",
               "name": "creator",
               "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
             }
           ],
           "internalType": "struct JointVenture.Proposal[]",
@@ -664,6 +669,11 @@
           "internalType": "address",
           "name": "creator",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
