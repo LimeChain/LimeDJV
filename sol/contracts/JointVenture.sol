@@ -39,6 +39,7 @@ contract JointVenture is VoterManager, ProposerManager {
         bytes data;
         bool executed;
         address creator;
+        uint256 id;
     }
 
     /*
@@ -322,7 +323,8 @@ contract JointVenture is VoterManager, ProposerManager {
             value: value,
             data: data,
             executed: false,
-            creator: msg.sender
+            creator: msg.sender,
+            id: proposalCount
         });
         proposalCount += 1;
         emit Submission(proposalId);
