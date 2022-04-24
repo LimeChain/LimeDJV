@@ -15,7 +15,7 @@ export const config = {
         blockExplorerUrl: "https://rinkeby.etherscan.io",
         refreshClaimTimestamp: 15000,
       },
-      factory_address: "0x09ace5Ea96F18A674b3BDC32Ada36eA2BE349a4C"
+      factory_address: "0x960c34B19Ef512Bd9Ad70e3810923B49D3E2C9a0"
     },
     bsc: {
       network: {

@@ -37,7 +37,7 @@ const MyVentures = () => {
       const factoryAddress = config.factory_address;
       const factoryContract = new Contract(factoryAddress, Factory_ABI, library.getSigner(account));
 
-      const instantiations = await factoryContract.getInstantiations(account);
+      const instantiations = await factoryContract.getAllInstantiations();
       setMyVentures(instantiations);
     };
     loadVentures();
