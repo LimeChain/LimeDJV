@@ -210,6 +210,7 @@ describe("JointVenture", function () {
       expect(proposalState.value, "not correct value").to.equal("0")
       expect(proposalState.data, "not correct data").to.equal(encodedData.data)
       expect(proposalState.executed, "not correct state").to.be.false
+      expect(proposalState.creator, "not correct creator").to.equal(voter1.address)
       
       // //! Confirm tx and change execution state 
       await jv.connect(voter2).confirmProposal(proposalId)
