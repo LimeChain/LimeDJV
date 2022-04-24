@@ -164,9 +164,12 @@ const ActiveVenture = () => {
                       );
                     })}
                 </div>
-                <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
+                {(ventureInfo as any).proposals?.length > 0 && <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
                   See all
-                </p>
+                </p>}
+                {(ventureInfo as any).proposals?.length == 0 && <p className="all" onClick={() => history.push(`/proposals/${address}`)}>
+                  No proposals
+                </p>}
               </div>
               <div className="accounts-wrapper">
                 <Accounts type="Voters" data={ventureInfo.voters} />
