@@ -99,7 +99,6 @@ const CreateProposal = () => {
         const fragment = contract.interface.getFunction(
           action.selectedFunction
         );
-        console.log(`create: ${JSON.stringify(action.functionParams)}`);
         const encodedData = contract.interface.encodeFunctionData(
           fragment,
           action.functionParams.map((param) => param.value)
@@ -139,7 +138,6 @@ const CreateProposal = () => {
 
   const prevClickHandler = () => {
     const activeIndex = progressSteps.findIndex((step) => step.isActive);
-    console.log(activeIndex);
 
     if (activeIndex - 1 < 0) {
       return;

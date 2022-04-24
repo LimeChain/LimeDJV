@@ -29,7 +29,6 @@ const Proposers = () => {
 
   const updateAddress = (val:any) => {
     const value = val.target.value;
-    console.log(val);
     let newProposers = [...proposers];
 
     newProposers.map((proposer, key) => {
@@ -39,7 +38,6 @@ const Proposers = () => {
     });
 
     setProposers(newProposers);
-    console.log(newProposers);
   };
 
   return (

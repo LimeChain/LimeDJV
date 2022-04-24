@@ -47,8 +47,6 @@ const ProposalActions = () => {
     const [property, index] = event.target.id.split("-");
     const newActions = [...proposalActions] as ProposalAction[];
 
-    console.log(proposalActions);
-
     const itemToUpdate = newActions[index];
 
     if (event.target.type === "checkbox") {

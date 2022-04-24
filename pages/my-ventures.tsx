@@ -24,7 +24,6 @@ const MyVentures = () => {
   
   const onSubmit = () => {
     setIsModalShown(true);
-    console.log("SUBMITTED");
   };
 
   useEffect(() => {

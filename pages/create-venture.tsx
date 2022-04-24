@@ -61,7 +61,6 @@ const CreateVenture = () => {
 
   const nextClickHandler = () => {
     const activeIndex = progressSteps.findIndex((step) => step.isActive);
-    console.log(activeIndex);
 
     if (activeIndex + 1 >= progressSteps.length) {
       return;
@@ -76,7 +75,6 @@ const CreateVenture = () => {
 
   const prevClickHandler = () => {
     const activeIndex = progressSteps.findIndex((step) => step.isActive);
-    console.log(activeIndex);
 
     if (activeIndex - 1 < 0) {
       return;

@@ -4,7 +4,6 @@ import { FunctionParam } from "./ProposalActions";
 
 const ProposalReview = () => {
   const { proposalDetails, proposalActions }: any = useGlobalContext();
-  console.log(proposalDetails);
 
   const details = proposalDetails.proposalDetails;
 
