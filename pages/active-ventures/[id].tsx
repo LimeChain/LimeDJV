@@ -118,7 +118,7 @@ const ActiveVenture = () => {
                     <div className="label">Address</div>
                     <div className="value margin-right">
                       {address}
-                      <img src="/svgs/paper.svg" />
+                      <img className="margin-left" src="/svgs/paper.svg" />
                       <img src="/svgs/logout.svg" />
                     </div>
                   </div>
