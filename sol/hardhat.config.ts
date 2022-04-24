@@ -23,12 +23,10 @@ task("verify-factory", "Verifies contracts").setAction(async () => {
   await verify();
 });
 
-task("verify-jv", "Verifies contracts")
-  .addParam("jv", "Joint venture contract address")
-  .setAction(async (args) => {
-    const { verify } = await lazyImport("./scripts/verify-jv");
-    await verify(args.jv);
-  });
+task("verify-jv", "Verifies contracts").setAction(async () => {
+  const { verify } = await lazyImport("./scripts/verify-jv");
+  await verify();
+});
 
 const config: HardhatUserConfig = {
   solidity: {

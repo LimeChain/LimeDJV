@@ -17,7 +17,7 @@
     "contracts:migrate:optimism": "npx hardhat deploy --network optimism",
     "contracts:migrate:bsc": "npx hardhat deploy --network bsc",
     "contracts:verify:factory:rinkeby": "npx hardhat verify-factory --network rinkeby",
-    "contracts:verify:jv:rinkeby": "npx hardhat verify-jv --network rinkeby --jv 0x..."
+    "contracts:verify:jv:rinkeby": "npx hardhat verify-jv --network rinkeby"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",

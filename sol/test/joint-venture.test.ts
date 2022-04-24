@@ -461,6 +461,10 @@ describe("JointVenture", function () {
       expect(balanceVoter2, "balanceVoter2 is not correct").to.equal(oneToken.div(voters))
     })
 
+    it("must fail if there is nothing to split", async () => {
+      await expect(jv.splitRevenue(tokenInstance.address)).to.be.revertedWith("JV: Nothing to split")
+    })
+
     it("must fail if nonVoter tries to confirm", async () => {})
 
     it("must fail if nonVoter tries to submit", async () => {

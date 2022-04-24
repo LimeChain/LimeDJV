@@ -1,15 +1,13 @@
 import hre from "hardhat";
 
-//! todo fix verification script
-async function verify(
-  address: string,
-  name: string,
-  description: string,
-  voters: string[],
-  proposers: string[],
-  required: string
-): Promise<void> {
-  // verify JointVentureFactory contract
+async function verify(): Promise<void> {
+  const address = "0x..";
+  const name = "name";
+  const description = "description";
+  const voters = ["0x.."];
+  const proposers = ["0x.."];
+  const required = 1;
+
   try {
     await hre.run("verify:verify", {
       address: address,
