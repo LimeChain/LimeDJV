@@ -30,7 +30,6 @@ const CreateProposal = () => {
   const [ventureInfo, setVentureInfo] = useState({});
   const [isModalShown, setIsModalShown] = useState(false);
   const { name } = ventureInfo;
-  const jointVentureContract = useJointVentureContract(address) as JointVenture;
   const { proposalActions, proposalDetails } = useGlobalContext();
 
   const [progressSteps, setProgressSteps] = useState([
@@ -107,7 +106,7 @@ const CreateProposal = () => {
           action.functionParams.map((param) => param.value)
         );
 
-        const tnx = await jointVentureContract.submitProposal(
+        const tnx = await ventureContract.submitProposal(
           action.targetAddress,
           proposalDetails.proposalDetails.title,
           proposalDetails.proposalDetails.description,
