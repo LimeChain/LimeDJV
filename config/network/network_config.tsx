@@ -69,7 +69,7 @@ export const config = {
         blockExplorerUrl: "https://kovan-optimistic.etherscan.io",
         refreshClaimTimestamp: 15000,
       },
-      factory_address: "0x54B34418581f1627C3a02859bd3d22f2F741Df07"
+      factory_address: "0x8288bEf5f877cd6C14Be4C330b7bc7C798ef3199"
     },
   };
   
